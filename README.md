@@ -8,7 +8,7 @@
 
 This project is still under development. Currently implemented parts can be found in the docs.
 
-- NetworkManager D-Bus API >= v1.24.2
+- NetworkManager D-Bus API >= v1.42.2
 
 ## Usage
 

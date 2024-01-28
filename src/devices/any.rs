@@ -11,7 +11,7 @@ type HashMapDBusVariant =
 
 type HashMapDBusVariantStr<'a> = std::collections::HashMap<
     &'a str,
-    std::collections::HashMap<&'a str, dbus::arg::Variant<Box<dyn dbus::arg::RefArg>>>,
+    std::collections::HashMap<String, dbus::arg::Variant<Box<dyn dbus::arg::RefArg>>>,
 >;
 
 pub trait Any {
@@ -66,10 +66,7 @@ macro_rules! impl_any {
         impl Any for $name {
             fn reapply(
                 &self,
-                connection: std::collections::HashMap<
-                    &str,
-                    std::collections::HashMap<&str, dbus::arg::Variant<Box<dyn dbus::arg::RefArg>>>,
-                >,
+                connection: HashMapDBusVariantStr<'_>,
                 version_id: u64,
                 flags: u32,
             ) -> Result<(), Error> {

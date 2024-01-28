@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-readonly NETWORKMANAGER_RELEASE="1.24.2"
+readonly NETWORKMANAGER_RELEASE="1.42.2"
 
 if !which git &> /dev/null; then
   echo "Git must be installed!!"
@@ -50,7 +50,7 @@ for spec in $root/tmp/introspection/*.xml; do
   dbus-codegen-rust -m None < "$spec" > "$dest_file"
 done
 
-echo "#![allow(warnings)]" > $dest/mod.rs
+echo "#![allow(warnings, rust_2018_idioms)]" > $dest/mod.rs
 
 for mod in ${allmods[@]}; do
   echo "mod "$mod";" >> $dest/mod.rs

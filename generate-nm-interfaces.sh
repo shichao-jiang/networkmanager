@@ -14,9 +14,11 @@ if [[ ! -d "$root" ]]; then
   exit 1
 fi
 
-mkdir -p $root/tmp
-git clone --depth 1 https://gitlab.freedesktop.org/NetworkManager/NetworkManager.git $root/tmp/
-cd tmp
+if [[ ! -d "$root/tmp" ]]; then
+  git clone --depth 1 https://gitlab.freedesktop.org/NetworkManager/NetworkManager.git $root/NetworkManagerSource/
+fi
+
+cd NetworkManagerSource
 git fetch --depth 1 origin tags/$NETWORKMANAGER_RELEASE
 git switch -d FETCH_HEAD
 cd ..
@@ -45,7 +47,9 @@ for spec in $root/tmp/introspection/*.xml; do
   [[ -z $trait ]] && trait="NetworkManager"
   alltraits+=($trait)
   modname=${basename#org.freedesktop.NetworkManager}
-  modname=nm${modname//./_}
+  [[ -z $modname ]] && modname="NetworkManager"
+  modname=${modname//^./}
+  modname=${modname//./_}
   modname=$(echo $modname | tr '[:upper:]' '[:lower:]')
   allmods+=($modname)
   dest_file="${dest}/${modname}".rs
@@ -53,22 +57,12 @@ for spec in $root/tmp/introspection/*.xml; do
   zbus-xmlgen "$spec" | sed -E "s/^trait \w+/pub trait $trait/" > "$dest_file"
 done
 
-echo "#![allow(warnings, rust_2018_idioms)]" > $dest/mod.rs
+echo "#![allow(clippy::type_complexity)]" > $dest/mod.rs
 
 for mod in ${allmods[@]}; do
-  echo "mod "$mod";" >> $dest/mod.rs
-done
-
-echo -e "\n" >> $dest/mod.rs
-
-for ((i=0;i<${#allmods[@]};++i)); do
-  echo "pub(super) use ${allmods[i]}::{${alltraits[i]}Proxy, ${alltraits[i]}ProxyBlocking};" >> $dest/mod.rs
+  echo "pub mod "$mod";" >> $dest/mod.rs
 done
 
 echo "Formatting code... "
 rustfmt $dest/*.rs
-echo "Done."
-
-echo "Cleaning up..."
-rm -rf $root/tmp
 echo "Done."

@@ -1,6 +1,6 @@
 [package]
 name = "passcod-networkmanager"
-version = "0.6.1"
+version = "0.7.0-pre.1"
 authors = [
     "Tobias Tschinkowitz <tobias.tschinkowitz@icloud.com>",
     "Walter Bonetti",
@@ -16,7 +16,6 @@ edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
-dbus = "0.9.7"
 num-traits = "0.2.17"
 num-derive = "0.4.1"
 thiserror = "1.0.56"

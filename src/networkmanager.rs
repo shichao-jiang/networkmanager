@@ -1,17 +1,17 @@
 use zbus::Connection;
 
+use crate::device::Device;
 use crate::errors::Error;
-use crate::genz::networkmanager::NetworkManagerProxy;
+use crate::raw::networkmanager::NetworkManagerProxy;
 use crate::settings::Settings;
 use crate::types::ReloadFlags;
-use crate::zdevice::ZDevice;
 
 #[derive(Clone, Debug)]
 pub struct NetworkManager {
     zbus: Connection,
 }
 
-crate::zproxy!(NetworkManager, NetworkManagerProxy<'_>);
+crate::zproxy_unpathed!(NetworkManager, NetworkManagerProxy<'_>);
 
 impl NetworkManager {
     /// Create a new NetworkManager instance.
@@ -38,14 +38,14 @@ impl NetworkManager {
     ///
     /// Returns the network devices known to the system. Does not include device placeholders (see
     /// [`get_all_devices()`](#method.get_all_devices)).
-    pub async fn get_devices(&self) -> Result<impl Iterator<Item = ZDevice> + '_, Error> {
+    pub async fn get_devices(&self) -> Result<impl Iterator<Item = Device> + '_, Error> {
         Ok(self
             .raw()
             .await?
             .get_devices()
             .await?
             .into_iter()
-            .map(|path| ZDevice {
+            .map(|path| Device {
                 zbus: self.zbus.clone(),
                 path,
             }))
@@ -55,14 +55,14 @@ impl NetworkManager {
     ///
     /// Includes device placeholders (eg, devices that do not yet exist but which could be
     /// automatically created by NetworkManager if one of their AvailableConnections was activated).
-    pub async fn get_all_devices(&self) -> Result<impl Iterator<Item = ZDevice> + '_, Error> {
+    pub async fn get_all_devices(&self) -> Result<impl Iterator<Item = Device> + '_, Error> {
         Ok(self
             .raw()
             .await?
             .get_all_devices()
             .await?
             .into_iter()
-            .map(|path| ZDevice {
+            .map(|path| Device {
                 zbus: self.zbus.clone(),
                 path,
             }))
@@ -72,8 +72,8 @@ impl NetworkManager {
     ///
     /// Note that some devices (usually modems) only have an IP interface name when they are
     /// connected.
-    pub async fn get_device_by_ip_interface_name(&self, iface: &str) -> Result<ZDevice, Error> {
-        Ok(ZDevice {
+    pub async fn get_device_by_ip_interface_name(&self, iface: &str) -> Result<Device, Error> {
+        Ok(Device {
             zbus: self.zbus.clone(),
             path: self.raw().await?.get_device_by_ip_iface(iface).await?,
         })
@@ -140,7 +140,7 @@ impl NetworkManager {
     }
 
     /// Settings service object
-    pub fn settings(&self) -> Result<Settings, Error> {
-        todo!()
+    pub fn settings(&self) -> Settings {
+        Settings::new_with_zbus(self.zbus.clone())
     }
 }

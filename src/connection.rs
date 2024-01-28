@@ -1,81 +1,139 @@
-use crate::configs::{Dhcp4Config, Dhcp6Config, Ip4Config, Ip6Config};
-use crate::dbus_api::DBusAccessor;
-use crate::devices::Device;
-use crate::gen::OrgFreedesktopNetworkManagerConnectionActive;
-use crate::types::{ActivationStateFlags, ActiveConnectionState};
-use crate::Error;
-use num_traits::FromPrimitive;
+use std::{collections::HashMap, path::PathBuf};
 
+use zbus::zvariant::{OwnedObjectPath, OwnedValue, Value};
+
+use crate::{types::ConnectionFlags, Error};
+
+/// A connection profile.
+///
+/// See [`Device::reapply()`](crate::device::Device::reapply()) for the difference between a
+/// [`Connection`] and an [`AppliedConnection`].
 #[derive(Clone, Debug)]
 pub struct Connection {
-    dbus_accessor: DBusAccessor,
+    pub(crate) zbus: zbus::Connection,
+    pub(crate) path: OwnedObjectPath,
 }
 
+crate::zproxy_pathed!(
+    Connection,
+    crate::raw::settings_connection::SettingsConnectionProxy<'_>
+);
+
 impl Connection {
-    pub(crate) fn new(dbus_accessor: DBusAccessor) -> Self {
-        Connection { dbus_accessor }
+    /// Update the connection with new settings and properties and save the connection to disk.
+    ///
+    /// This replaces all previous settings and properties.
+    ///
+    /// Secrets may be part of the update request, and will be either stored in persistent storage
+    /// or sent to a Secret Agent for storage, depending on the flags associated with each secret.
+    pub async fn update(
+        &self,
+        properties: HashMap<&str, HashMap<&str, Value<'_>>>,
+    ) -> Result<(), Error> {
+        self.raw()
+            .await?
+            .update(properties)
+            .await
+            .map_err(Error::ZBus)
     }
-    pub fn connection(&self) -> Result<String, Error> {
-        Ok(proxy!(self).connection()?.to_string())
+
+    /// Update the connection with new settings and properties, but do not immediately save the connection to disk.
+    ///
+    /// This replaces all previous settings and properties.
+    ///
+    /// Secrets may be part of the update request and may sent to a Secret Agent for storage,
+    /// depending on the flags associated with each secret.
+    ///
+    /// Use the [`Connection::save()`] method to save these changes to disk.
+    ///
+    /// Note that unsaved changes will be lost if the connection is reloaded from disk (either
+    /// automatically on file change or due to an explicit `ReloadConnections` call).
+    pub async fn update_in_memory(
+        &self,
+        properties: HashMap<&str, HashMap<&str, Value<'_>>>,
+    ) -> Result<(), Error> {
+        self.raw()
+            .await?
+            .update_unsaved(properties)
+            .await
+            .map_err(Error::ZBus)
     }
-    pub fn specific_object(&self) -> Result<String, Error> {
-        Ok(proxy!(self).specific_object()?.to_string())
+
+    /// Delete the connection.
+    pub async fn delete(&self) -> Result<(), Error> {
+        self.raw().await?.delete().await.map_err(Error::ZBus)
     }
-    pub fn id(&self) -> Result<String, Error> {
-        Ok(proxy!(self).id()?)
+
+    /// Get the settings maps describing this network configuration.
+    ///
+    /// This will never include any secrets required for connection to the network, as those are
+    /// often protected. Secrets must be requested separately using the `GetSecrets` call.
+    pub async fn settings(&self) -> Result<HashMap<String, HashMap<String, OwnedValue>>, Error> {
+        self.raw().await?.get_settings().await.map_err(Error::ZBus)
     }
-    pub fn uuid(&self) -> Result<String, Error> {
-        Ok(proxy!(self).uuid()?)
+
+    /// Get the secrets belonging to this network configuration.
+    ///
+    /// Only secrets from persistent storage or a Secret Agent running in the requestor's session
+    /// will be returned. The user will never be prompted for secrets as a result of this request.
+    pub async fn secrets(&self) -> Result<HashMap<String, HashMap<String, OwnedValue>>, Error> {
+        self.secrets_for_setting("").await
     }
-    pub fn type_(&self) -> Result<String, Error> {
-        Ok(proxy!(self).type_()?)
+
+    /// Get the secrets belonging to this network configuration, for a particular setting.
+    ///
+    /// Only secrets from persistent storage or a Secret Agent running in the requestor's session
+    /// will be returned. The user will never be prompted for secrets as a result of this request.
+    pub async fn secrets_for_setting(
+        &self,
+        setting_name: &str,
+    ) -> Result<HashMap<String, HashMap<String, OwnedValue>>, Error> {
+        self.raw()
+            .await?
+            .get_secrets(setting_name)
+            .await
+            .map_err(Error::ZBus)
     }
-    pub fn devices(&self) -> Result<Vec<Device>, Error> {
-        let device_paths = proxy!(self).devices()?;
-        let mut res = Vec::new();
-        for dev_path in device_paths {
-            res.push(Device::new(self.dbus_accessor.with_path(dev_path))?);
-        }
-        Ok(res)
+
+    /// Clear the secrets belonging to this network connection profile.
+    pub async fn clear_secrets(&self) -> Result<(), Error> {
+        self.raw().await?.clear_secrets().await.map_err(Error::ZBus)
     }
-    pub fn state(&self) -> Result<ActiveConnectionState, Error> {
-        let state = proxy!(self).state()?;
-        match FromPrimitive::from_u32(state) {
-            Some(x) => Ok(x),
-            None => Err(Error::UnsupportedType),
-        }
+
+    /// Save a connection previously updated with [`Connection::update_in_memory()`] to persistent storage.
+    pub async fn save(&self) -> Result<(), Error> {
+        self.raw().await?.save().await.map_err(Error::ZBus)
     }
-    pub fn state_flags(&self) -> Result<ActivationStateFlags, Error> {
-        let state = proxy!(self).state_flags()?;
-        Ok(ActivationStateFlags::from_bits_retain(state))
+
+    // TODO: Update2
+
+    /// Indicates whether the in-memory state of the connection matches the on-disk state.
+    ///
+    /// This flag will be unset when [`Connection::update_in_memory()`] is called or when any
+    /// connection details change, and set when the connection is saved to disk via
+    /// [`Connection::save()`] or from internal operations.
+    pub async fn is_saved(&self) -> Result<bool, Error> {
+        self.raw()
+            .await?
+            .unsaved()
+            .await
+            .map(|flag| !flag)
+            .map_err(Error::ZBus)
     }
-    pub fn default(&self) -> Result<bool, Error> {
-        Ok(proxy!(self).default()?)
+
+    /// Additional flags of the connection profile.
+    pub async fn flags(&self) -> Result<ConnectionFlags, Error> {
+        let value = self.raw().await?.flags().await?;
+        Ok(ConnectionFlags::from_bits_retain(value))
     }
-    pub fn ip4_config(&self) -> Result<Ip4Config, Error> {
-        let path = proxy!(self).ip4_config()?;
-        Ok(Ip4Config::new(self.dbus_accessor.with_path(path)))
-    }
-    pub fn dhcp4_config(&self) -> Result<Dhcp4Config, Error> {
-        let path = proxy!(self).dhcp4_config()?;
-        Ok(Dhcp4Config::new(self.dbus_accessor.with_path(path)))
-    }
-    pub fn default6(&self) -> Result<bool, Error> {
-        Ok(proxy!(self).default6()?)
-    }
-    pub fn ip6_config(&self) -> Result<Ip6Config, Error> {
-        let path = proxy!(self).ip6_config()?;
-        Ok(Ip6Config::new(self.dbus_accessor.with_path(path)))
-    }
-    pub fn dhcp6_config(&self) -> Result<Dhcp6Config, Error> {
-        let path = proxy!(self).dhcp6_config()?;
-        Ok(Dhcp6Config::new(self.dbus_accessor.with_path(path)))
-    }
-    pub fn vpn(&self) -> Result<bool, Error> {
-        Ok(proxy!(self).vpn()?)
-    }
-    pub fn master(&self) -> Result<Device, Error> {
-        let dev_path = proxy!(self).master()?;
-        Device::new(self.dbus_accessor.with_path(dev_path))
+
+    /// File that stores the connection when the connection is file-backed.
+    pub async fn filename(&self) -> Result<PathBuf, Error> {
+        self.raw()
+            .await?
+            .filename()
+            .await
+            .map(|path| path.into())
+            .map_err(Error::ZBus)
     }
 }

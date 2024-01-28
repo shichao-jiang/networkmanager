@@ -16,45 +16,28 @@ Add networkmanager to your `Cargo.toml` with:
 
 ```toml
 [dependencies]
-networkmanager = { package = "passcod-networkmanager", version = "0.5.0" }
+networkmanager = { package = "passcod-networkmanager", version = "=0.7.0-pre.1" }
+tokio = { version = "1", features = ["full"] }
 ```
 
 ## Example
 
 ```rust,no_run
-use networkmanager::devices::{Any, Device, Wired, Wireless};
 use networkmanager::{Error, NetworkManager};
 
-fn main() -> Result<(), Error> {
-    let nm = NetworkManager::new()?;
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    let nm = NetworkManager::new().await?;
 
-    for dev in nm.get_devices()? {
-        match dev {
-            Device::Ethernet(x) => {
-                println!("Is autoconnected: {:?}", x.autoconnect()?);
-                println!("Speed: {:?}", x.speed()?);
-                println!("S390 Subchannels: {:?}", x.s390_subchannels()?);
-                println!("Carrier: {:?}", x.carrier()?);
+    for dev in nm.get_devices().await? {
+        if let Some(wifi) = dev.to_wireless().await? {
+            println!("Bitrate: {:?}", wifi.bitrate().await?);
+            wifi.request_scan().await?;
+            for ap in wifi.get_all_access_points().await? {
+                let raw = ap.ssid().await?;
+                println!("SSID: {} {raw:02x?}", String::from_utf8_lossy(&raw));
             }
-            Device::WiFi(x) => {
-                println!("Access Point: {:?}", x.access_points()?);
-            }
-            _ => {}
         }
-    }
-
-    let enp0s2 = nm.get_device_by_ip_iface("enp0s2")?;
-    match enp0s2 {
-        Device::Ethernet(x) => {
-            // NetworkManager >= 1.24
-            // println!("Hardware Address: {:?}", Any::hw_address(&x)?);
-
-            // NetworkManager < 1.24
-            // println!("Hardware Address: {:?}", Wired::hw_address(&x)?);
-
-            println!("Speed: {:?}", x.speed()?);
-        }
-        _ => {}
     }
 
     Ok(())
@@ -79,14 +62,14 @@ fn main() -> Result<(), Error> {
 
 - Implementations
   - Devices
-    - [x] Any
-    - [x] Generic
+    - [x] Top level
+    - [ ] Generic
     - [x] Wireless
-    - [x] Wired
+    - [ ] Wired
     - [ ] ADSL
     - [ ] Bluetooth
     - [ ] Bond
-    - [x] Bridge
+    - [ ] Bridge
     - [ ] Dummy
     - [ ] Infiniband
     - [ ] IpTunnel
@@ -102,7 +85,7 @@ fn main() -> Result<(), Error> {
     - [ ] Statistics
     - [ ] Team
     - [ ] TUN/TAP
-    - [x] VETH
+    - [ ] VETH
     - [ ] VLAN
     - [ ] VRF
     - [ ] VXLAN
@@ -111,27 +94,24 @@ fn main() -> Result<(), Error> {
     - [ ] Wireguard
     - [ ] Wpan
   - Configs
-    - [x] IP4
-    - [x] IP6
-    - [x] DHCP4
-    - [x] DHCP6
+    - [ ] IP4
+    - [ ] IP6
+    - [ ] DHCP4
+    - [ ] DHCP6
   - [x] Accesspoint
-  - [x] ConnectionActive
-  - [ ] NetworkManager (partially implemented)
+  - [ ] ConnectionActive
+  - [x] NetworkManager (partially implemented)
   - [ ] AgentManager
   - [ ] Checkpoint
   - [ ] DNSManager
   - [ ] PPP
   - [ ] SecretAgent
-  - [ ] Settings
-  - [ ] Settings Connection
+  - [x] Settings
+  - [x] Settings Connection
   - [ ] VPN Connection
   - [ ] VPN Plugin
   - [ ] WifiP2P
   - [ ] Wimax NSP
-- General
-  - [ ] Improve Error handling
-  - [ ] dbus::arg::Variants conversion
 
 ## License
 

@@ -34,11 +34,7 @@ impl Connection {
         let device_paths = proxy!(self).devices()?;
         let mut res = Vec::new();
         for dev_path in device_paths {
-            res.push(Device::new(DBusAccessor::new(
-                self.dbus_accessor.connection.clone(),
-                &self.dbus_accessor.bus,
-                &dev_path,
-            ))?);
+            res.push(Device::new(self.dbus_accessor.with_path(dev_path))?);
         }
         Ok(res)
     }
@@ -61,48 +57,28 @@ impl Connection {
     }
     pub fn ip4_config(&self) -> Result<Ip4Config, Error> {
         let path = proxy!(self).ip4_config()?;
-        Ok(Ip4Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection.clone(),
-            &self.dbus_accessor.bus,
-            &path,
-        )))
+        Ok(Ip4Config::new(self.dbus_accessor.with_path(path)))
     }
     pub fn dhcp4_config(&self) -> Result<Dhcp4Config, Error> {
         let path = proxy!(self).dhcp4_config()?;
-        Ok(Dhcp4Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection.clone(),
-            &self.dbus_accessor.bus,
-            &path,
-        )))
+        Ok(Dhcp4Config::new(self.dbus_accessor.with_path(path)))
     }
     pub fn default6(&self) -> Result<bool, Error> {
         Ok(proxy!(self).default6()?)
     }
     pub fn ip6_config(&self) -> Result<Ip6Config, Error> {
         let path = proxy!(self).ip6_config()?;
-        Ok(Ip6Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection.clone(),
-            &self.dbus_accessor.bus,
-            &path,
-        )))
+        Ok(Ip6Config::new(self.dbus_accessor.with_path(path)))
     }
     pub fn dhcp6_config(&self) -> Result<Dhcp6Config, Error> {
         let path = proxy!(self).dhcp6_config()?;
-        Ok(Dhcp6Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection.clone(),
-            &self.dbus_accessor.bus,
-            &path,
-        )))
+        Ok(Dhcp6Config::new(self.dbus_accessor.with_path(path)))
     }
     pub fn vpn(&self) -> Result<bool, Error> {
         Ok(proxy!(self).vpn()?)
     }
     pub fn master(&self) -> Result<Device, Error> {
         let dev_path = proxy!(self).master()?;
-        Device::new(DBusAccessor::new(
-            self.dbus_accessor.connection.clone(),
-            &self.dbus_accessor.bus,
-            &dev_path,
-        ))
+        Device::new(self.dbus_accessor.with_path(dev_path))
     }
 }

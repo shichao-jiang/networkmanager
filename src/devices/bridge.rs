@@ -1,6 +1,5 @@
 use super::BridgeDevice;
 use super::Device;
-use crate::dbus_api::DBusAccessor;
 use crate::gen::OrgFreedesktopNetworkManagerDeviceBridge;
 use crate::Error;
 
@@ -23,11 +22,7 @@ impl Bridge for BridgeDevice {
         let paths = proxy!(self).slaves()?;
         let mut vec = Vec::new();
         for slave_path in paths {
-            vec.push(Device::new(DBusAccessor::new(
-                self.dbus_accessor.connection.clone(),
-                &self.dbus_accessor.bus,
-                &slave_path,
-            ))?)
+            vec.push(Device::new(self.dbus_accessor.with_path(slave_path))?)
         }
         Ok(vec)
     }

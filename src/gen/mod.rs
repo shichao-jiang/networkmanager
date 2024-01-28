@@ -1,4 +1,4 @@
-#![allow(warnings)]
+#![allow(warnings, rust_2018_idioms)]
 mod nm;
 mod nm_accesspoint;
 mod nm_agentmanager;

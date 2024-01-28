@@ -1,16 +1,10 @@
-//!
-//! # networkmanager
-//!
 //! A [NetworkManager](https://wiki.gnome.org/Projects/NetworkManager) API library using the [D-Bus message bus system](https://www.freedesktop.org/wiki/Software/dbus/)
 //!
 //! ## Usage
 //!
-//! Add networkmanager and dbus to your `Cargo.toml` with:
-//!
 //! ```toml
 //! [dependencies]
-//! networkmanager = "0.3"
-//! dbus = "0.8"
+//! networkmanager = { package = "passcod-networkmanager", version = "0.5.0" }
 //! ```
 //!
 //! ## Example
@@ -58,6 +52,8 @@
 //!     Ok(())
 //! }
 //! ```
+
+#![deny(rust_2018_idioms)]
 
 mod gen;
 #[macro_use]

@@ -1,5 +1,5 @@
-use networkmanager::devices::{Any, Device, Wired, Wireless};
-use networkmanager::{Error, NetworkManager};
+use passcod_networkmanager::devices::{Any, Device, Wired, Wireless};
+use passcod_networkmanager::{Error, NetworkManager};
 
 fn main() -> Result<(), Error> {
     let nm = NetworkManager::new()?;

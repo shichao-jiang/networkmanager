@@ -1,5 +1,9 @@
-use dbus::blocking::{Connection, Proxy};
-use std::{fmt, sync::Arc, time::Duration};
+use dbus::{
+    blocking::{Connection, Proxy},
+    strings::BusName,
+    Path,
+};
+use std::{fmt, rc::Rc, time::Duration};
 
 const DBUS_TIMEOUT_MS: u64 = 5000;
 
@@ -11,17 +15,25 @@ macro_rules! proxy {
 
 #[derive(Clone)]
 pub(crate) struct DBusAccessor {
-    pub(crate) connection: Arc<Connection>,
-    pub(crate) bus: String,
-    pub(crate) path: String,
+    pub(crate) connection: Rc<Connection>,
+    pub(crate) bus: BusName<'static>,
+    pub(crate) path: Path<'static>,
 }
 
 impl DBusAccessor {
-    pub(crate) fn new(connection: Arc<Connection>, bus: &str, path: &str) -> Self {
+    pub(crate) fn new(connection: Rc<Connection>, bus: &str, path: &str) -> Self {
         DBusAccessor {
             connection: connection.clone(),
-            bus: bus.to_owned(),
-            path: path.to_owned(),
+            bus: BusName::from(bus).into_static(),
+            path: Path::from(path).into_static(),
+        }
+    }
+
+    pub(crate) fn with_path(&self, path: Path<'_>) -> Self {
+        DBusAccessor {
+            connection: self.connection.clone(),
+            bus: self.bus.clone(),
+            path: path.into_static(),
         }
     }
 

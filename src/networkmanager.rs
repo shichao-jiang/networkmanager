@@ -1,4 +1,4 @@
-use std::sync::Arc;
+use std::rc::Rc;
 
 use crate::dbus_api::DBusAccessor;
 use crate::devices::Device;
@@ -19,13 +19,15 @@ pub struct NetworkManager {
 
 impl NetworkManager {
     pub fn new() -> Result<Self, Error> {
-        Connection::new_system().map(Self::new_with_dbus).map_err(Error::DBus)
+        Connection::new_system()
+            .map(Self::new_with_dbus)
+            .map_err(Error::DBus)
     }
-    
+
     pub fn new_with_dbus(dbus_connection: Connection) -> Self {
         NetworkManager {
             dbus_accessor: DBusAccessor::new(
-                Arc::new(dbus_connection),
+                Rc::new(dbus_connection),
                 NETWORK_MANAGER_BUS,
                 NETWORK_MANAGER_PATH,
             ),
@@ -35,21 +37,13 @@ impl NetworkManager {
     fn paths_to_devices(&self, paths: Vec<dbus::Path<'_>>) -> Result<Vec<Device>, Error> {
         let mut res = Vec::new();
         for path in paths {
-            res.push(Device::new(DBusAccessor::new(
-                self.dbus_accessor.connection.clone(),
-                &self.dbus_accessor.bus,
-                &path,
-            ))?);
+            res.push(Device::new(self.dbus_accessor.with_path(path))?);
         }
         Ok(res)
     }
 
     fn path_to_device(&self, path: dbus::Path<'_>) -> Result<Device, Error> {
-        Device::new(DBusAccessor::new(
-            self.dbus_accessor.connection.clone(),
-            &self.dbus_accessor.bus,
-            &path,
-        ))
+        Device::new(self.dbus_accessor.with_path(path))
     }
 
     /// Reloads NetworkManager by the given scope

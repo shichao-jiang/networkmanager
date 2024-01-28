@@ -1,7 +1,6 @@
 use super::{BridgeDevice, EthernetDevice, GenericDevice, VethDevice, WiFiDevice};
 use crate::configs::{Dhcp4Config, Dhcp6Config, Ip4Config, Ip6Config};
 use crate::connection::Connection;
-use crate::dbus_api::DBusAccessor;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManagerDevice;
 use crate::types::{Capability, ConnectivityState, DeviceInterfaceFlag, DeviceType};
@@ -18,7 +17,7 @@ type HashMapDBusVariantStr<'a> = std::collections::HashMap<
 pub trait Any {
     fn reapply(
         &self,
-        connection: HashMapDBusVariantStr,
+        connection: HashMapDBusVariantStr<'_>,
         version_id: u64,
         flags: u32,
     ) -> Result<(), Error>;
@@ -124,43 +123,23 @@ macro_rules! impl_any {
             }
             fn active_connection(&self) -> Result<Connection, Error> {
                 let path = proxy!(self).active_connection()?;
-                Ok(Connection::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    &path,
-                )))
+                Ok(Connection::new(self.dbus_accessor.with_path(path)))
             }
             fn ip4_config(&self) -> Result<Ip4Config, Error> {
                 let path = proxy!(self).ip4_config()?;
-                Ok(Ip4Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    &path,
-                )))
+                Ok(Ip4Config::new(self.dbus_accessor.with_path(path)))
             }
             fn dhcp4_config(&self) -> Result<Dhcp4Config, Error> {
                 let path = proxy!(self).dhcp4_config()?;
-                Ok(Dhcp4Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    &path,
-                )))
+                Ok(Dhcp4Config::new(self.dbus_accessor.with_path(path)))
             }
             fn ip6_config(&self) -> Result<Ip6Config, Error> {
                 let path = proxy!(self).ip6_config()?;
-                Ok(Ip6Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    &path,
-                )))
+                Ok(Ip6Config::new(self.dbus_accessor.with_path(path)))
             }
             fn dhcp6_config(&self) -> Result<Dhcp6Config, Error> {
                 let path = proxy!(self).dhcp6_config()?;
-                Ok(Dhcp6Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    &path,
-                )))
+                Ok(Dhcp6Config::new(self.dbus_accessor.with_path(path)))
             }
             fn managed(&self) -> Result<bool, Error> {
                 Ok(proxy!(self).managed()?)

@@ -13,7 +13,7 @@ type Ip6RouteProperty = (Ip6Route, Ip6Prefix, Ip6NextHop, Ip6Metric);
 
 type HashMapDBusVariant =
     std::collections::HashMap<String, dbus::arg::Variant<Box<dyn dbus::arg::RefArg + 'static>>>;
-    
+
 #[derive(Clone, Debug)]
 pub struct Ip6Config {
     dbus_accessor: DBusAccessor,

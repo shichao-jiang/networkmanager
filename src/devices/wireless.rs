@@ -1,6 +1,5 @@
 use super::WiFiDevice;
 use crate::accesspoint::AccessPoint;
-use crate::dbus_api::DBusAccessor;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManagerDeviceWireless;
 
@@ -32,26 +31,14 @@ impl Wireless for WiFiDevice {
         Ok(proxy!(self)
             .get_access_points()?
             .iter()
-            .map(|x| {
-                AccessPoint::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    x,
-                ))
-            })
+            .map(|x| AccessPoint::new(self.dbus_accessor.with_path(x.clone())))
             .collect())
     }
     fn get_all_access_points(&self) -> Result<Vec<AccessPoint>, Error> {
         Ok(proxy!(self)
             .get_all_access_points()?
             .iter()
-            .map(|x| {
-                AccessPoint::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    x,
-                ))
-            })
+            .map(|x| AccessPoint::new(self.dbus_accessor.with_path(x.clone())))
             .collect())
     }
     fn hw_address(&self) -> Result<String, Error> {
@@ -70,22 +57,12 @@ impl Wireless for WiFiDevice {
         Ok(proxy!(self)
             .access_points()?
             .iter()
-            .map(|x| {
-                AccessPoint::new(DBusAccessor::new(
-                    self.dbus_accessor.connection.clone(),
-                    &self.dbus_accessor.bus,
-                    x,
-                ))
-            })
+            .map(|x| AccessPoint::new(self.dbus_accessor.with_path(x.clone())))
             .collect())
     }
     fn active_access_point(&self) -> Result<AccessPoint, Error> {
         let path = proxy!(self).active_access_point()?;
-        Ok(AccessPoint::new(DBusAccessor::new(
-            self.dbus_accessor.connection.clone(),
-            &self.dbus_accessor.bus,
-            &path,
-        )))
+        Ok(AccessPoint::new(self.dbus_accessor.with_path(path)))
     }
     fn wireless_capabilities(&self) -> Result<u32, Error> {
         Ok(proxy!(self).wireless_capabilities()?)

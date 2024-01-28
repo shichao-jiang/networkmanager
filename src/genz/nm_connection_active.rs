@@ -70,8 +70,8 @@ pub trait ConnectionActive {
     fn specific_object(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// State property
-    #[dbus_proxy(property)]
-    fn state(&self) -> zbus::Result<u32>;
+    #[dbus_proxy(property, name = "State")]
+    fn state_property(&self) -> zbus::Result<u32>;
 
     /// StateFlags property
     #[dbus_proxy(property)]

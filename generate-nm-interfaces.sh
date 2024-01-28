@@ -62,7 +62,7 @@ done
 echo -e "\n" >> $dest/mod.rs
 
 for ((i=0;i<${#allmods[@]};++i)); do
-    echo "pub(super) use ${allmods[i]}::${alltraits[i]};" >> $dest/mod.rs
+  echo "pub(super) use ${allmods[i]}::{${alltraits[i]}Proxy, ${alltraits[i]}ProxyBlocking};" >> $dest/mod.rs
 done
 
 echo "Formatting code... "

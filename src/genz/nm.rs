@@ -208,8 +208,8 @@ pub trait NetworkManager {
     fn startup(&self) -> zbus::Result<bool>;
 
     /// State property
-    #[dbus_proxy(property)]
-    fn state(&self) -> zbus::Result<u32>;
+    #[dbus_proxy(property, name = "State")]
+    fn state_property(&self) -> zbus::Result<u32>;
 
     /// Version property
     #[dbus_proxy(property)]

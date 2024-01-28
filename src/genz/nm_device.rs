@@ -171,8 +171,8 @@ pub trait Device {
     fn real(&self) -> zbus::Result<bool>;
 
     /// State property
-    #[dbus_proxy(property)]
-    fn state(&self) -> zbus::Result<u32>;
+    #[dbus_proxy(property, name = "State")]
+    fn state_property(&self) -> zbus::Result<u32>;
 
     /// StateReason property
     #[dbus_proxy(property)]

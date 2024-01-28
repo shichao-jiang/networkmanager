@@ -26,6 +26,6 @@ pub trait VPNConnection {
     fn banner(&self) -> zbus::Result<String>;
 
     /// VpnState property
-    #[dbus_proxy(property)]
-    fn vpn_state(&self) -> zbus::Result<u32>;
+    #[dbus_proxy(property, name = "VpnState")]
+    fn vpn_state_property(&self) -> zbus::Result<u32>;
 }

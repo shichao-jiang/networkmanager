@@ -109,13 +109,13 @@ pub trait VPNPlugin {
 
     /// SecretsRequired signal
     #[dbus_proxy(signal)]
-    fn secrets_required(&self, message: &str, secrets: &[&str]) -> zbus::Result<()>;
+    fn secrets_required(&self, message: &str, secrets: Vec<&str>) -> zbus::Result<()>;
 
     /// StateChanged signal
     #[dbus_proxy(signal)]
     fn state_changed(&self, state: u32) -> zbus::Result<()>;
 
     /// State property
-    #[dbus_proxy(property)]
-    fn state(&self) -> zbus::Result<u32>;
+    #[dbus_proxy(property, name = "State")]
+    fn state_property(&self) -> zbus::Result<u32>;
 }

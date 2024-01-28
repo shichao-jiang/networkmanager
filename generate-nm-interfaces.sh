@@ -15,9 +15,10 @@ if [[ ! -d "$root" ]]; then
 fi
 
 mkdir -p $root/tmp
-git clone https://gitlab.freedesktop.org/NetworkManager/NetworkManager.git $root/tmp/
+git clone --depth 1 https://gitlab.freedesktop.org/NetworkManager/NetworkManager.git $root/tmp/
 cd tmp
-git checkout tags/$NETWORKMANAGER_RELEASE
+git fetch --depth 1 origin tags/$NETWORKMANAGER_RELEASE
+git switch -d FETCH_HEAD
 cd ..
 
 if ! hash dbus-codegen-rust 2> /dev/null; then

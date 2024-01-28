@@ -47,10 +47,7 @@ impl Connection {
     }
     pub fn state_flags(&self) -> Result<ActivationStateFlags, Error> {
         let state = proxy!(self).state_flags()?;
-        match FromPrimitive::from_u32(state) {
-            Some(x) => Ok(x),
-            None => Err(Error::UnsupportedType),
-        }
+        Ok(ActivationStateFlags::from_bits_retain(state))
     }
     pub fn default(&self) -> Result<bool, Error> {
         Ok(proxy!(self).default()?)

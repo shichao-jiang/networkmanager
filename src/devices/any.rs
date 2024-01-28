@@ -3,7 +3,7 @@ use crate::configs::{Dhcp4Config, Dhcp6Config, Ip4Config, Ip6Config};
 use crate::connection::Connection;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManagerDevice;
-use crate::types::{Capability, ConnectivityState, DeviceInterfaceFlag, DeviceType};
+use crate::types::{CapabilityFlags, ConnectivityState, DeviceInterfaceFlags, DeviceType};
 use num_traits::FromPrimitive;
 
 type HashMapDBusVariant =
@@ -33,7 +33,7 @@ pub trait Any {
     fn driver(&self) -> Result<String, Error>;
     fn driver_version(&self) -> Result<String, Error>;
     fn firmware_version(&self) -> Result<String, Error>;
-    fn capabilities(&self) -> Result<Capability, Error>;
+    fn capabilities(&self) -> Result<CapabilityFlags, Error>;
     fn ip4_address(&self) -> Result<u32, Error>;
     fn state(&self) -> Result<u32, Error>;
     fn state_reason(&self) -> Result<(u32, u32), Error>;
@@ -57,7 +57,7 @@ pub trait Any {
     fn real(&self) -> Result<bool, Error>;
     fn ip4_connectivity(&self) -> Result<ConnectivityState, Error>;
     fn ip6_connectivity(&self) -> Result<ConnectivityState, Error>;
-    fn interface_flags(&self) -> Result<DeviceInterfaceFlag, Error>;
+    fn interface_flags(&self) -> Result<DeviceInterfaceFlags, Error>;
     fn hw_address(&self) -> Result<String, Error>;
 }
 
@@ -102,12 +102,9 @@ macro_rules! impl_any {
             fn firmware_version(&self) -> Result<String, Error> {
                 Ok(proxy!(self).firmware_version()?)
             }
-            fn capabilities(&self) -> Result<Capability, Error> {
+            fn capabilities(&self) -> Result<CapabilityFlags, Error> {
                 let cap = proxy!(self).capabilities()?;
-                match FromPrimitive::from_u32(cap) {
-                    Some(x) => Ok(x),
-                    None => Err(Error::UnsupportedType),
-                }
+                Ok(CapabilityFlags::from_bits_retain(cap))
             }
             fn ip4_address(&self) -> Result<u32, Error> {
                 Ok(proxy!(self).ip4_address()?)
@@ -200,12 +197,9 @@ macro_rules! impl_any {
                     None => Err(Error::UnsupportedType),
                 }
             }
-            fn interface_flags(&self) -> Result<DeviceInterfaceFlag, Error> {
+            fn interface_flags(&self) -> Result<DeviceInterfaceFlags, Error> {
                 let interface_flag = proxy!(self).interface_flags()?;
-                match FromPrimitive::from_u32(interface_flag) {
-                    Some(x) => Ok(x),
-                    None => Err(Error::UnsupportedType),
-                }
+                Ok(DeviceInterfaceFlags::from_bits_retain(interface_flag))
             }
             fn hw_address(&self) -> Result<String, Error> {
                 Ok(proxy!(self).hw_address()?)

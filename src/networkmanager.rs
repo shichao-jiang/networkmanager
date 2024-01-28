@@ -5,10 +5,8 @@ use crate::devices::Device;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManager;
 use crate::settings::Settings;
-use crate::types::ReloadFlag;
+use crate::types::ReloadFlags;
 use dbus::blocking::Connection;
-
-use num_traits::ToPrimitive;
 
 const NETWORK_MANAGER_BUS: &str = "org.freedesktop.NetworkManager";
 const NETWORK_MANAGER_PATH: &str = "/org/freedesktop/NetworkManager";

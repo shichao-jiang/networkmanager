@@ -3,9 +3,9 @@ use num_derive::FromPrimitive;
 
 bitflags! {
     /// Capabilities of a specific device.
-    /// 
+    ///
     /// [DBus Service documentation](https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMCapability)
-    /// 
+    ///
     /// The range `0x7000` to `0x7FFF` is unused by NetworkManager, and can be used by extensions.
     /// This bitflag is read using [`CapabilityFlags::from_bits_retain()`] so that any bits set by
     /// extensions can be read without special support.
@@ -13,22 +13,22 @@ bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
     pub struct CapabilityFlags: u32 {
         /// Teams can be managed.
-        /// 
+        ///
         /// This means the team device plugin is loaded.
         const TEAM = 1;
-        
+
         /// OpenVSwitch can be managed.
-        /// 
-        /// This means the OVS device plugin is loaded. 
+        ///
+        /// This means the OVS device plugin is loaded.
         const DNS_RC = 2;
     }
 }
 
 bitflags! {
     /// Specify what to reload.
-    /// 
+    ///
     /// [DBus Service documentation](https://www.networkmanager.dev/docs/api/latest/gdbus-org.freedesktop.NetworkManager.html#gdbus-method-org-freedesktop-NetworkManager.Reload)
-    /// 
+    ///
     /// The [default value of `ReloadFlags`](ReloadFlags#default) (equivalent to [`ReloadFlags::empty()`]) performs a
     /// full reload, akin to sending SIGHUP to the NetworkManager daemon, and includes the behaviour of all flags.
     /// Setting a bit performs instead only the specified action(s).
@@ -37,10 +37,10 @@ bitflags! {
     pub struct ReloadFlags: u32 {
         /// Reload the NetworkManager configuration from disk.
         const CONFIGURATION = 0x01;
-        
+
         /// Update the DNS configuration; generally means to rewrite `/etc/resolv.conf`.
         const DNS_RC = 0x02;
-        
+
         /// Restart the DNS plugin, if one is in use.
         const DNS_PLUGIN = 0x04;
     }
@@ -54,32 +54,32 @@ impl Default for ReloadFlags {
 
 bitflags! {
     /// Flags for a network interface.
-    /// 
+    ///
     /// [DBus Service documentation](https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMDeviceInterfaceFlags)
     #[repr(transparent)]
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
     pub struct DeviceInterfaceFlags: u32 {
         /// The interface is enabled from the administrative point of view.
-        /// 
+        ///
         /// Corresponds to kernel `IFF_UP`.
         const UP = 0x1;
-        
+
         /// The physical link is up.
-        /// 
+        ///
         /// Corresponds to kernel `IFF_LOWER_UP`.
         const LOWER_UP = 0x2;
-        
+
         /// Receive all packets.
-        /// 
+        ///
         /// Corresponds to kernel `IFF_PROMISC`.
         const PROMISCUOUS = 0x4;
-        
+
         /// The interface has carrier.
-        /// 
+        ///
         /// In most cases this is equal to the value of `LOWER_UP`. However some devices have a
         /// non-standard carrier detection mechanism.
         const CARRIER = 0x10000;
-        
+
         /// The interface is enabled for LLDP.
         const LLDP_CLIENT_ENABLED = 0x20000;
     }
@@ -133,36 +133,36 @@ pub enum DeviceType {
 
 bitflags! {
     /// Flags describing the current activation state.
-    /// 
+    ///
     /// [DBus Service documentation](https://www.networkmanager.dev/docs/api/latest/nm-dbus-types.html#NMActivationStateFlags)
     #[repr(transparent)]
     #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
     pub struct ActivationStateFlags: u32 {
         /// The device is a master.
         const IS_MASTER = 0x1;
-        
+
         /// The device is a slave.
         const IS_SLAVE = 0x2;
-        
+
         /// Layer2 is activated and ready.
         const LAYER2_READY = 0x4;
-        
+
         /// IPv4 setting is completed.
         const IPV4_READY = 0x8;
-        
+
         /// IPv6 setting is completed.
         const IPV6_READY = 0x10;
-        
+
         /// The master has any slave devices attached.
-        /// 
+        ///
         /// This only makes sense if the device is a master.
         const MASTER_HAS_SLAVES = 0x20;
-        
+
         /// The lifetime of the activation is bound to the visibility of the connection profile,
         /// which in turn depends on `connection.permissions` and whether a session for the user
         /// exists.
         const LIFETIME_BOUND_TO_PROFILE_VISIBILITY = 0x40;
-        
+
         /// The active connection was generated to represent an external configuration of a
         /// networking device.
         const EXTERNAL = 0x80;

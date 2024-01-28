@@ -1,10 +1,11 @@
 use passcod_networkmanager::devices::{Any, Device, Wired, Wireless};
 use passcod_networkmanager::{Error, NetworkManager};
 
-fn main() -> Result<(), Error> {
-    let nm = NetworkManager::new()?;
+#[tokio::main]
+async fn main() -> Result<(), Error> {
+    let nm = NetworkManager::new().await?;
 
-    for dev in nm.get_devices()? {
+    for dev in nm.get_devices().await? {
         match dev {
             Device::Ethernet(x) => {
                 println!("Is autoconnected: {:?}", x.autoconnect()?);
@@ -27,7 +28,7 @@ fn main() -> Result<(), Error> {
         }
     }
 
-    let eth0 = nm.get_device_by_ip_iface("eth0")?;
+    let eth0 = nm.get_device_by_ip_interface_name("eth0").await?;
     match eth0 {
         Device::Ethernet(x) => {
             // NetworkManager >= 1.24

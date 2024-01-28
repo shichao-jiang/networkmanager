@@ -1,94 +1,146 @@
-use std::rc::Rc;
+use zbus::Connection;
 
-use crate::dbus_api::DBusAccessor;
-use crate::devices::Device;
 use crate::errors::Error;
-use crate::gen::OrgFreedesktopNetworkManager;
+use crate::genz::networkmanager::NetworkManagerProxy;
 use crate::settings::Settings;
 use crate::types::ReloadFlags;
-use dbus::blocking::Connection;
-
-const NETWORK_MANAGER_BUS: &str = "org.freedesktop.NetworkManager";
-const NETWORK_MANAGER_PATH: &str = "/org/freedesktop/NetworkManager";
+use crate::zdevice::ZDevice;
 
 #[derive(Clone, Debug)]
 pub struct NetworkManager {
-    dbus_accessor: DBusAccessor,
+    zbus: Connection,
 }
 
+crate::zproxy!(NetworkManager, NetworkManagerProxy<'_>);
+
 impl NetworkManager {
-    pub fn new() -> Result<Self, Error> {
-        Connection::new_system()
-            .map(Self::new_with_dbus)
-            .map_err(Error::DBus)
+    /// Create a new NetworkManager instance.
+    pub async fn new() -> Result<Self, Error> {
+        let zbus = Connection::system().await?;
+        Ok(Self::new_with_zbus(zbus))
     }
 
-    pub fn new_with_dbus(dbus_connection: Connection) -> Self {
-        NetworkManager {
-            dbus_accessor: DBusAccessor::new(
-                Rc::new(dbus_connection),
-                NETWORK_MANAGER_BUS,
-                NETWORK_MANAGER_PATH,
-            ),
-        }
+    /// Create a new NetworkManager instance with a custom D-Bus connection.
+    pub fn new_with_zbus(zbus: Connection) -> Self {
+        NetworkManager { zbus }
     }
 
-    fn paths_to_devices(&self, paths: Vec<dbus::Path<'_>>) -> Result<Vec<Device>, Error> {
-        let mut res = Vec::new();
-        for path in paths {
-            res.push(Device::new(self.dbus_accessor.with_path(path))?);
-        }
-        Ok(res)
+    /// Reload NetworkManager.
+    pub async fn reload(&self, flags: ReloadFlags) -> Result<(), Error> {
+        self.raw()
+            .await?
+            .reload(flags.bits())
+            .await
+            .map_err(Error::ZBus)
     }
 
-    fn path_to_device(&self, path: dbus::Path<'_>) -> Result<Device, Error> {
-        Device::new(self.dbus_accessor.with_path(path))
+    /// Get the list of realized network devices.
+    ///
+    /// Returns the network devices known to the system. Does not include device placeholders (see
+    /// [`get_all_devices()`](#method.get_all_devices)).
+    pub async fn get_devices(&self) -> Result<impl Iterator<Item = ZDevice> + '_, Error> {
+        Ok(self
+            .raw()
+            .await?
+            .get_devices()
+            .await?
+            .into_iter()
+            .map(|path| ZDevice {
+                zbus: self.zbus.clone(),
+                path,
+            }))
     }
 
-    /// Reloads NetworkManager by the given scope
-    pub fn reload(&self, flags: ReloadFlag) -> Result<(), Error> {
-        match ToPrimitive::to_u32(&flags) {
-            Some(x) => Ok(proxy!(self).reload(x)?),
-            None => Err(Error::UnsupportedType),
-        }
+    /// Get the list of all network devices.
+    ///
+    /// Includes device placeholders (eg, devices that do not yet exist but which could be
+    /// automatically created by NetworkManager if one of their AvailableConnections was activated).
+    pub async fn get_all_devices(&self) -> Result<impl Iterator<Item = ZDevice> + '_, Error> {
+        Ok(self
+            .raw()
+            .await?
+            .get_all_devices()
+            .await?
+            .into_iter()
+            .map(|path| ZDevice {
+                zbus: self.zbus.clone(),
+                path,
+            }))
     }
 
-    /// Returns only realized network devices
-    pub fn get_devices(&self) -> Result<Vec<Device>, Error> {
-        let dev_paths = proxy!(self).get_devices()?;
-        self.paths_to_devices(dev_paths)
+    /// Get the network device referenced by its IP interface name.
+    ///
+    /// Note that some devices (usually modems) only have an IP interface name when they are
+    /// connected.
+    pub async fn get_device_by_ip_interface_name(&self, iface: &str) -> Result<ZDevice, Error> {
+        Ok(ZDevice {
+            zbus: self.zbus.clone(),
+            path: self.raw().await?.get_device_by_ip_iface(iface).await?,
+        })
     }
 
-    /// Returns all the network devices
-    pub fn get_all_devices(&self) -> Result<Vec<Device>, Error> {
-        let dev_paths = proxy!(self).get_all_devices()?;
-        self.paths_to_devices(dev_paths)
+    // TODO: ActivateConnection()
+    // TODO: AddAndActivateConnection()
+    // TODO: AddAndActivateConnection2()
+    // TODO: DeactivateConnection()
+    // TODO: Sleep()
+    // TODO: GetPermissions()
+    // TODO: SetLogging()
+    // TODO: GetLogging()
+    // TODO: CheckConnectivity()
+    // TODO: State()
+    // TODO: CheckpointCreate()
+    // TODO: CheckpointDestroy()
+    // TODO: CheckpointRollback()
+    // TODO: CheckpointAdjustRollbackTimeout()
+
+    pub async fn enable(&self, enabled: bool) -> Result<(), Error> {
+        self.raw().await?.enable(enabled).await?;
+        Ok(())
     }
 
-    pub fn get_device_by_ip_iface(&self, iface: &str) -> Result<Device, Error> {
-        let dev_path = proxy!(self).get_device_by_ip_iface(iface)?;
-        self.path_to_device(dev_path)
+    pub async fn is_networking_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.networking_enabled().await?)
     }
 
-    pub fn networking_enabled(&self) -> Result<bool, Error> {
-        Ok(proxy!(self).networking_enabled()?)
+    pub async fn is_wireless_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.wireless_enabled().await?)
     }
 
-    pub fn wireless_enabled(&self) -> Result<bool, Error> {
-        Ok(proxy!(self).wireless_enabled()?)
+    pub async fn is_wireless_hardware_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.wireless_hardware_enabled().await?)
     }
 
-    pub fn wireless_hardware_enabled(&self) -> Result<bool, Error> {
-        Ok(proxy!(self).wireless_hardware_enabled()?)
+    pub async fn is_wimax_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.wimax_enabled().await?)
     }
 
-    /// Shows if NetworkManager is currently starting up
-    pub fn startup(&self) -> Result<bool, Error> {
-        Ok(proxy!(self).startup()?)
+    pub async fn is_wimax_hardware_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.wimax_hardware_enabled().await?)
+    }
+
+    pub async fn is_wwan_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.wwan_enabled().await?)
+    }
+
+    pub async fn is_wwan_hardware_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.wwan_hardware_enabled().await?)
+    }
+
+    pub async fn is_connectivity_check_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.connectivity_check_enabled().await?)
+    }
+
+    /// Indicates whether NetworkManager is still starting up.
+    ///
+    /// This becomes `false` when NetworkManager has finished attempting to activate every
+    /// connection that it might be able to activate at startup.
+    pub async fn is_starting_up(&self) -> Result<bool, Error> {
+        Ok(self.raw().await?.startup().await?)
     }
 
     /// Settings service object
     pub fn settings(&self) -> Result<Settings, Error> {
-        Ok(Settings::new(self.dbus_accessor.clone()))
+        todo!()
     }
 }

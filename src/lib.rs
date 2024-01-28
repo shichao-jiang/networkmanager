@@ -69,8 +69,30 @@ pub mod configs;
 pub mod connection;
 pub mod devices;
 pub mod types;
+pub mod zdevice;
 
 pub use crate::accesspoint::AccessPoint;
 pub use crate::errors::Error;
 pub use crate::networkmanager::NetworkManager;
 pub use crate::settings::Settings;
+
+#[cfg(feature = "raw")]
+pub use genz;
+
+macro_rules! zproxy {
+    ($facade:ty, $proxy:ty) => {
+        impl $facade {
+            #[cfg(not(feature = "raw"))]
+            pub(crate) async fn raw(&self) -> Result<$proxy, Error> {
+                <$proxy>::new(&self.zbus).await.map_err(Error::ZBus)
+            }
+
+            /// Get the raw D-Bus proxy.
+            #[cfg(feature = "raw")]
+            pub async fn raw(&self) -> Result<$proxy, Error> {
+                <$proxy>::new(&self.zbus).await.map_err(Error::ZBus)
+            }
+        }
+    };
+}
+pub(crate) use zproxy;

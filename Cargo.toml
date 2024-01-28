@@ -22,3 +22,12 @@ num-derive = "0.4.1"
 thiserror = "1.0.56"
 zbus = "3.14.1"
 bitflags = "2.4.2"
+
+[dev-dependencies]
+tokio = { version = "1.35.1", features = ["full"] }
+
+[features]
+default = []
+
+## Provide access to the raw bindings
+raw = []

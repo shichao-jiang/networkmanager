@@ -1,5 +1,4 @@
 #![allow(clippy::type_complexity)]
-pub mod networkmanager;
 pub mod accesspoint;
 pub mod agentmanager;
 pub mod checkpoint;
@@ -41,6 +40,7 @@ pub mod dhcp6config;
 pub mod dnsmanager;
 pub mod ip4config;
 pub mod ip6config;
+pub mod networkmanager;
 pub mod ppp;
 pub mod secretagent;
 pub mod settings;

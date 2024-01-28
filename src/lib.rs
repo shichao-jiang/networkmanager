@@ -57,6 +57,7 @@
 #![deny(rust_2018_idioms)]
 
 mod gen;
+mod genz;
 #[macro_use]
 mod dbus_api;
 mod accesspoint;

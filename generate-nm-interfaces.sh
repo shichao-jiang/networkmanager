@@ -32,7 +32,7 @@ if ! hash dbus-codegen-rust 2> /dev/null; then
   fi
 fi
 
-dest="$root/src/gen"
+dest="$root/src/genz"
 mkdir -p $dest
 
 alltraits=()
@@ -41,6 +41,8 @@ for spec in $root/tmp/introspection/*.xml; do
   basename=$(basename "$spec" .xml)
   trait=( $(IFS=. ; printf '%s ' $basename) )
   trait=$(echo ${trait[@]^} | tr -d "[:space:]")
+  trait=${trait#OrgFreedesktopNetworkManager}
+  [[ -z $trait ]] && trait="NetworkManager"
   alltraits+=($trait)
   modname=${basename#org.freedesktop.NetworkManager}
   modname=nm${modname//./_}
@@ -48,7 +50,7 @@ for spec in $root/tmp/introspection/*.xml; do
   allmods+=($modname)
   dest_file="${dest}/${modname}".rs
   echo "Generating code from $(basename "${spec}") to ${modname}…"
-  dbus-codegen-rust -m None < "$spec" > "$dest_file"
+  zbus-xmlgen "$spec" | sed -E "s/^trait \w+/pub trait $trait/" > "$dest_file"
 done
 
 echo "#![allow(warnings, rust_2018_idioms)]" > $dest/mod.rs

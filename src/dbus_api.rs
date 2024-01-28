@@ -37,6 +37,14 @@ impl DBusAccessor {
         }
     }
 
+    pub(crate) fn with_bus_and_path(&self, bus: BusName<'_>, path: Path<'_>) -> Self {
+        DBusAccessor {
+            connection: self.connection.clone(),
+            bus: bus.into_static(),
+            path: path.into_static(),
+        }
+    }
+
     pub(crate) fn create_proxy(&self) -> Proxy<'_, &Connection> {
         self.connection.with_proxy(
             &self.bus,

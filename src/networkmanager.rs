@@ -4,6 +4,7 @@ use crate::dbus_api::DBusAccessor;
 use crate::devices::Device;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManager;
+use crate::settings::Settings;
 use crate::types::ReloadFlag;
 use dbus::blocking::Connection;
 
@@ -86,5 +87,10 @@ impl NetworkManager {
     /// Shows if NetworkManager is currently starting up
     pub fn startup(&self) -> Result<bool, Error> {
         Ok(proxy!(self).startup()?)
+    }
+
+    /// Settings service object
+    pub fn settings(&self) -> Result<Settings, Error> {
+        Ok(Settings::new(self.dbus_accessor.clone()))
     }
 }

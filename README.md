@@ -12,12 +12,11 @@ This project is still under development. Currently implemented parts can be foun
 
 ## Usage
 
-Add networkmanager and dbus to your `Cargo.toml` with:
+Add networkmanager to your `Cargo.toml` with:
 
 ```toml
 [dependencies]
-networkmanager = "0.4"
-dbus = "0.9"
+networkmanager = { package = "passcod-networkmanager", version = "0.5.0" }
 ```
 
 ## Example
@@ -26,12 +25,8 @@ dbus = "0.9"
 use networkmanager::devices::{Any, Device, Wired, Wireless};
 use networkmanager::{Error, NetworkManager};
 
-use dbus::blocking::Connection;
-
 fn main() -> Result<(), Error> {
-    let dbus_connection = Connection::new_system()?;
-
-    let nm = NetworkManager::new(&dbus_connection);
+    let nm = NetworkManager::new()?;
 
     for dev in nm.get_devices()? {
         match dev {

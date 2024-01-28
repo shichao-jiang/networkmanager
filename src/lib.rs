@@ -10,6 +10,7 @@
 //! ## Example
 //!
 //! ```rust,no_run
+//! # use passcod_networkmanager as networkmanager;
 //! use networkmanager::devices::{Any, Device, Wired, Wireless};
 //! use networkmanager::{Error, NetworkManager};
 //!

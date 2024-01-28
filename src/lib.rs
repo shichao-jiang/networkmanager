@@ -68,5 +68,6 @@ pub mod connection;
 pub mod devices;
 pub mod types;
 
+pub use crate::accesspoint::AccessPoint;
 pub use crate::errors::Error;
 pub use crate::networkmanager::NetworkManager;

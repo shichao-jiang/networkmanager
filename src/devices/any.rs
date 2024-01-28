@@ -167,7 +167,12 @@ macro_rules! impl_any {
                 }
             }
             fn available_connections(&self) -> Result<Vec<Connection>, Error> {
-                todo!()
+                let paths = proxy!(self).available_connections()?;
+                let mut connections = Vec::with_capacity(paths.len());
+                for path in paths {
+                    connections.push(Connection::new(self.dbus_accessor.with_path(path)));
+                }
+                Ok(connections)
             }
             fn physical_port_id(&self) -> Result<String, Error> {
                 Ok(proxy!(self).physical_port_id()?)

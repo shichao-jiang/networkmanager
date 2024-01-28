@@ -1,3 +1,5 @@
+use std::sync::Arc;
+
 use crate::dbus_api::DBusAccessor;
 use crate::devices::Device;
 use crate::errors::Error;
@@ -10,26 +12,31 @@ use num_traits::ToPrimitive;
 const NETWORK_MANAGER_BUS: &str = "org.freedesktop.NetworkManager";
 const NETWORK_MANAGER_PATH: &str = "/org/freedesktop/NetworkManager";
 
-pub struct NetworkManager<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct NetworkManager {
+    dbus_accessor: DBusAccessor,
 }
 
-impl<'a> NetworkManager<'a> {
-    pub fn new(dbus_connection: &'a Connection) -> Self {
+impl NetworkManager {
+    pub fn new() -> Result<Self, Error> {
+        Connection::new_system().map(Self::new_with_dbus).map_err(Error::DBus)
+    }
+    
+    pub fn new_with_dbus(dbus_connection: Connection) -> Self {
         NetworkManager {
             dbus_accessor: DBusAccessor::new(
-                dbus_connection,
+                Arc::new(dbus_connection),
                 NETWORK_MANAGER_BUS,
                 NETWORK_MANAGER_PATH,
             ),
         }
     }
 
-    fn paths_to_devices(&self, paths: Vec<dbus::Path<'_>>) -> Result<Vec<Device<'_>>, Error> {
+    fn paths_to_devices(&self, paths: Vec<dbus::Path<'_>>) -> Result<Vec<Device>, Error> {
         let mut res = Vec::new();
         for path in paths {
             res.push(Device::new(DBusAccessor::new(
-                self.dbus_accessor.connection,
+                self.dbus_accessor.connection.clone(),
                 &self.dbus_accessor.bus,
                 &path,
             ))?);
@@ -37,9 +44,9 @@ impl<'a> NetworkManager<'a> {
         Ok(res)
     }
 
-    fn path_to_device(&self, path: dbus::Path<'_>) -> Result<Device<'_>, Error> {
+    fn path_to_device(&self, path: dbus::Path<'_>) -> Result<Device, Error> {
         Device::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &path,
         ))
@@ -54,18 +61,18 @@ impl<'a> NetworkManager<'a> {
     }
 
     /// Returns only realized network devices
-    pub fn get_devices(&self) -> Result<Vec<Device<'_>>, Error> {
+    pub fn get_devices(&self) -> Result<Vec<Device>, Error> {
         let dev_paths = proxy!(self).get_devices()?;
         self.paths_to_devices(dev_paths)
     }
 
     /// Returns all the network devices
-    pub fn get_all_devices(&self) -> Result<Vec<Device<'_>>, Error> {
+    pub fn get_all_devices(&self) -> Result<Vec<Device>, Error> {
         let dev_paths = proxy!(self).get_all_devices()?;
         self.paths_to_devices(dev_paths)
     }
 
-    pub fn get_device_by_ip_iface(&self, iface: &str) -> Result<Device<'_>, Error> {
+    pub fn get_device_by_ip_iface(&self, iface: &str) -> Result<Device, Error> {
         let dev_path = proxy!(self).get_device_by_ip_iface(iface)?;
         self.path_to_device(dev_path)
     }

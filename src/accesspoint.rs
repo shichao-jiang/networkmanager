@@ -2,12 +2,13 @@ use crate::dbus_api::DBusAccessor;
 use crate::gen::OrgFreedesktopNetworkManagerAccessPoint;
 use crate::Error;
 
-pub struct AccessPoint<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct AccessPoint {
+    dbus_accessor: DBusAccessor,
 }
 
-impl<'a> AccessPoint<'a> {
-    pub(crate) fn new(dbus_accessor: DBusAccessor<'a>) -> Self {
+impl AccessPoint {
+    pub(crate) fn new(dbus_accessor: DBusAccessor) -> Self {
         AccessPoint { dbus_accessor }
     }
     pub fn flags(&self) -> Result<u32, Error> {

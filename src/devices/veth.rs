@@ -10,11 +10,11 @@ pub trait Veth {
     fn peer(&self) -> Result<Device, Error>;
 }
 
-impl<'a> Veth for VethDevice<'a> {
+impl Veth for VethDevice {
     fn peer(&self) -> Result<Device, Error> {
         let path = proxy!(self).peer()?;
         Device::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &path,
         ))

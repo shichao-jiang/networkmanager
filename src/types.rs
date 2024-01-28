@@ -1,12 +1,12 @@
 use num_derive::{FromPrimitive, ToPrimitive};
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Clone, Copy, Debug, FromPrimitive)]
 pub enum Capability {
     Team = 1,
     Ovs = 2,
 }
 
-#[derive(Debug, ToPrimitive)]
+#[derive(Clone, Copy, Debug, ToPrimitive)]
 pub enum ReloadFlag {
     None = 0,
     Conf = 1,
@@ -15,7 +15,7 @@ pub enum ReloadFlag {
     All = 7,
 }
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Clone, Copy, Debug, FromPrimitive)]
 pub enum DeviceInterfaceFlag {
     None = 0,
     Up = 1,
@@ -25,7 +25,7 @@ pub enum DeviceInterfaceFlag {
     LldpClientEnabled = 0x20000,
 }
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Clone, Copy, Debug, FromPrimitive)]
 pub enum ConnectivityState {
     Unknown = 0,
     None = 1,
@@ -34,7 +34,7 @@ pub enum ConnectivityState {
     Full = 4,
 }
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Clone, Copy, Debug, FromPrimitive)]
 pub enum DeviceType {
     Unknown = 0,
     Ethernet = 1,
@@ -71,7 +71,7 @@ pub enum DeviceType {
     Loopback = 32,
 }
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Clone, Copy, Debug, FromPrimitive)]
 pub enum ActivationStateFlags {
     None = 0,
     IsMaster = 1,
@@ -84,7 +84,7 @@ pub enum ActivationStateFlags {
     External = 128,
 }
 
-#[derive(Debug, FromPrimitive)]
+#[derive(Clone, Copy, Debug, FromPrimitive)]
 pub enum ActiveConnectionState {
     Unknown = 0,
     Activating = 1,
@@ -93,6 +93,7 @@ pub enum ActiveConnectionState {
     Deactivated = 4,
 }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMState {
 //     NmStateUnknown = 0,
 //     NmStateAsleep = 10,
@@ -104,6 +105,7 @@ pub enum ActiveConnectionState {
 //     NmStateConnectedGlobal = 70,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMDeviceCapabilities {
 //     NmDeviceCapNone = 0,
 //     NmDeviceCapNmSupported = 1,
@@ -112,6 +114,7 @@ pub enum ActiveConnectionState {
 //     NmDeviceCapSriov = 8,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMDeviceWifiCapabilities {
 //     NmWifiDeviceCapNone = 0,
 //     NmWifiDeviceCapCipherWep40 = 1,
@@ -129,6 +132,7 @@ pub enum ActiveConnectionState {
 //     NmWifiDeviceCapIbssRsn = 8192,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NM80211ApFlags {
 //     Nm802_11ApFlagsNone = 0,
 //     Nm802_11ApFlagsPrivacy = 1,
@@ -137,6 +141,7 @@ pub enum ActiveConnectionState {
 //     Nm802_11ApFlagsWpsPin = 8,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NM80211ApSecurityFlags {
 //     Nm802_11ApSecNone = 0,
 //     Nm802_11ApSecPairWep40 = 1,
@@ -153,6 +158,7 @@ pub enum ActiveConnectionState {
 //     Nm802_11ApSecKeyMgmtOwe = 2048,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NM80211Mode {
 //     Nm802_11ModeUnknown = 0,
 //     Nm802_11ModeAdhoc = 1,
@@ -161,12 +167,14 @@ pub enum ActiveConnectionState {
 //     Nm802_11ModeMesh = 4,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMBluetoothCapabilities {
 //     NmBtCapabilityNone = 0,
 //     NmBtCapabilityDun = 1,
 //     NmBtCapabilityNap = 2,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMDeviceModemCapabilities {
 //     NmDeviceModemCapabilityNone = 0,
 //     NmDeviceModemCapabilityPots = 1,
@@ -175,6 +183,7 @@ pub enum ActiveConnectionState {
 //     NmDeviceModemCapabilityLte = 8,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMWimaxNspNetworkType {
 //     NmWimaxNspNetworkTypeUnknown = 0,
 //     NmWimaxNspNetworkTypeHome = 1,
@@ -182,6 +191,7 @@ pub enum ActiveConnectionState {
 //     NmWimaxNspNetworkTypeRoamingPartner = 3,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMDeviceState {
 //     NmDeviceStateUnknown = 0,
 //     NmDeviceStateUnmanaged = 10,
@@ -198,6 +208,7 @@ pub enum ActiveConnectionState {
 //     NmDeviceStateFailed = 120,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMDeviceStateReason {
 //     NmDeviceStateReasonNone = 0,
 //     NmDeviceStateReasonUnknown = 1,
@@ -269,6 +280,7 @@ pub enum ActiveConnectionState {
 //     NmDeviceStateReasonPeerNotFound = 67,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // pub enum NMMetered {
 //     NmMeteredUnknown = 0,
 //     NmMeteredYes = 1,
@@ -277,6 +289,7 @@ pub enum ActiveConnectionState {
 //     NmMeteredGuessNo = 4,
 // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMConnectionMultiConnect {
 // //     NM_CONNECTION_MULTI_CONNECT_DEFAULT = 0,
 // //     NM_CONNECTION_MULTI_CONNECT_SINGLE = 1,
@@ -284,6 +297,7 @@ pub enum ActiveConnectionState {
 // //     NM_CONNECTION_MULTI_CONNECT_MULTIPLE = 3,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMActiveConnectionStateReason {
 // //     NM_ACTIVE_CONNECTION_STATE_REASON_UNKNOWN = 0,
 // //     NM_ACTIVE_CONNECTION_STATE_REASON_NONE = 1,
@@ -302,6 +316,7 @@ pub enum ActiveConnectionState {
 // //     NM_ACTIVE_CONNECTION_STATE_REASON_DEVICE_REMOVED = 14,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMSecretAgentGetSecretsFlags {
 // //     NM_SECRET_AGENT_GET_SECRETS_FLAG_NONE = 0,
 // //     NM_SECRET_AGENT_GET_SECRETS_FLAG_ALLOW_INTERACTION = 1,
@@ -312,11 +327,13 @@ pub enum ActiveConnectionState {
 // //     NM_SECRET_AGENT_GET_SECRETS_FLAG_NO_ERRORS = 1073741824,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMSecretAgentCapabilities {
 // //     NM_SECRET_AGENT_CAPABILITY_NONE = 0,
 // //     NM_SECRET_AGENT_CAPABILITY_VPN_HINTS = 1,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMIPTunnelMode {
 // //     NM_IP_TUNNEL_MODE_UNKNOWN = 0,
 // //     NM_IP_TUNNEL_MODE_IPIP = 1,
@@ -332,6 +349,7 @@ pub enum ActiveConnectionState {
 // //     NM_IP_TUNNEL_MODE_IP6GRETAP = 11,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMCheckpointCreateFlags {
 // //     NM_CHECKPOINT_CREATE_FLAG_NONE = 0,
 // //     NM_CHECKPOINT_CREATE_FLAG_DESTROY_ALL = 1,
@@ -340,6 +358,7 @@ pub enum ActiveConnectionState {
 // //     NM_CHECKPOINT_CREATE_FLAG_ALLOW_OVERLAPPING = 8,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMRollbackResult {
 // //     NM_ROLLBACK_RESULT_OK = 0,
 // //     NM_ROLLBACK_RESULT_ERR_NO_DEVICE = 1,
@@ -347,6 +366,7 @@ pub enum ActiveConnectionState {
 // //     NM_ROLLBACK_RESULT_ERR_FAILED = 3,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMSettingsConnectionFlags {
 // //     NM_SETTINGS_CONNECTION_FLAG_NONE = 0,
 // //     NM_SETTINGS_CONNECTION_FLAG_UNSAVED = 1,
@@ -354,6 +374,7 @@ pub enum ActiveConnectionState {
 // //     NM_SETTINGS_CONNECTION_FLAG_VOLATILE = 4,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMSettingsAddConnection2Flags {
 // //     NM_SETTINGS_ADD_CONNECTION2_FLAG_NONE = 0,
 // //     NM_SETTINGS_ADD_CONNECTION2_FLAG_TO_DISK = 1,
@@ -361,6 +382,7 @@ pub enum ActiveConnectionState {
 // //     NM_SETTINGS_ADD_CONNECTION2_FLAG_BLOCK_AUTOCONNECT = 32,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMSettingsUpdate2Flags {
 // //     NM_SETTINGS_UPDATE2_FLAG_NONE = 0,
 // //     NM_SETTINGS_UPDATE2_FLAG_TO_DISK = 1,
@@ -372,12 +394,14 @@ pub enum ActiveConnectionState {
 // //     NM_SETTINGS_UPDATE2_FLAG_NO_REAPPLY = 64,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMTernary {
 // //     NM_TERNARY_DEFAULT = -1,
 // //     NM_TERNARY_FALSE = 0,
 // //     NM_TERNARY_TRUE = 1,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMClientPermission {
 // //     NM_CLIENT_PERMISSION_NONE = 0,
 // //     NM_CLIENT_PERMISSION_ENABLE_DISABLE_NETWORK = 1,
@@ -399,6 +423,7 @@ pub enum ActiveConnectionState {
 // //     NM_CLIENT_PERMISSION_WIFI_SCAN = 17,
 // // }
 
+// #[derive(Clone, Copy, Debug, FromPrimitive)]
 // // pub enum NMClientPermissionResult {
 // //     NM_CLIENT_PERMISSION_RESULT_UNKNOWN = 0,
 // //     NM_CLIENT_PERMISSION_RESULT_YES = 1,

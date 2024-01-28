@@ -17,37 +17,43 @@ use crate::gen::OrgFreedesktopNetworkManagerDevice;
 use crate::types::DeviceType;
 use num_traits::FromPrimitive;
 
-pub enum Device<'a> {
-    WiFi(WiFiDevice<'a>),
-    Ethernet(EthernetDevice<'a>),
-    Generic(GenericDevice<'a>),
-    Bridge(BridgeDevice<'a>),
-    Veth(VethDevice<'a>),
+#[derive(Clone, Debug)]
+pub enum Device {
+    WiFi(WiFiDevice),
+    Ethernet(EthernetDevice),
+    Generic(GenericDevice),
+    Bridge(BridgeDevice),
+    Veth(VethDevice),
     UnsupportedDevice,
 }
 
-pub struct GenericDevice<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct GenericDevice {
+    dbus_accessor: DBusAccessor,
 }
 
-pub struct WiFiDevice<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct WiFiDevice {
+    dbus_accessor: DBusAccessor,
 }
 
-pub struct EthernetDevice<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct EthernetDevice {
+    dbus_accessor: DBusAccessor,
 }
 
-pub struct BridgeDevice<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct BridgeDevice {
+    dbus_accessor: DBusAccessor,
 }
 
-pub struct VethDevice<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct VethDevice {
+    dbus_accessor: DBusAccessor,
 }
 
-impl<'a> Device<'a> {
-    pub(crate) fn new(dbus_accessor: DBusAccessor<'a>) -> Result<Self, Error> {
+impl Device {
+    pub(crate) fn new(dbus_accessor: DBusAccessor) -> Result<Self, Error> {
         let dev_type = dbus_accessor.create_proxy().device_type()?;
         match FromPrimitive::from_u32(dev_type) {
             Some(x) => match x {

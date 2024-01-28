@@ -21,7 +21,7 @@ pub trait Wireless {
     fn last_scan(&self) -> Result<i64, Error>;
 }
 
-impl<'a> Wireless for WiFiDevice<'a> {
+impl Wireless for WiFiDevice {
     fn request_scan(
         &self,
         options: std::collections::HashMap<&str, dbus::arg::Variant<Box<dyn dbus::arg::RefArg>>>,
@@ -34,7 +34,7 @@ impl<'a> Wireless for WiFiDevice<'a> {
             .iter()
             .map(|x| {
                 AccessPoint::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     x,
                 ))
@@ -47,7 +47,7 @@ impl<'a> Wireless for WiFiDevice<'a> {
             .iter()
             .map(|x| {
                 AccessPoint::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     x,
                 ))
@@ -72,7 +72,7 @@ impl<'a> Wireless for WiFiDevice<'a> {
             .iter()
             .map(|x| {
                 AccessPoint::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     x,
                 ))
@@ -82,7 +82,7 @@ impl<'a> Wireless for WiFiDevice<'a> {
     fn active_access_point(&self) -> Result<AccessPoint, Error> {
         let path = proxy!(self).active_access_point()?;
         Ok(AccessPoint::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &path,
         )))

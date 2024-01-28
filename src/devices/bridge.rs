@@ -10,7 +10,7 @@ pub trait Bridge {
     fn slaves(&self) -> Result<Vec<Device>, Error>;
 }
 
-impl<'a> Bridge for BridgeDevice<'a> {
+impl Bridge for BridgeDevice {
     fn hw_address(&self) -> Result<String, Error> {
         Ok(proxy!(self).hw_address()?)
     }
@@ -24,7 +24,7 @@ impl<'a> Bridge for BridgeDevice<'a> {
         let mut vec = Vec::new();
         for slave_path in paths {
             vec.push(Device::new(DBusAccessor::new(
-                self.dbus_accessor.connection,
+                self.dbus_accessor.connection.clone(),
                 &self.dbus_accessor.bus,
                 &slave_path,
             ))?)

@@ -2,15 +2,16 @@ use crate::dbus_api::DBusAccessor;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManagerIP4Config;
 
-pub struct Ip4Config<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct Ip4Config {
+    dbus_accessor: DBusAccessor,
 }
 
 type HashMapDBusVariant =
     std::collections::HashMap<String, dbus::arg::Variant<Box<dyn dbus::arg::RefArg + 'static>>>;
 
-impl<'a> Ip4Config<'a> {
-    pub(crate) fn new(dbus_accessor: DBusAccessor<'a>) -> Self {
+impl Ip4Config {
+    pub(crate) fn new(dbus_accessor: DBusAccessor) -> Self {
         Ip4Config { dbus_accessor }
     }
 

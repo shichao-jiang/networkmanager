@@ -2,12 +2,13 @@ use crate::dbus_api::DBusAccessor;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManagerDHCP4Config;
 
-pub struct Dhcp4Config<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct Dhcp4Config {
+    dbus_accessor: DBusAccessor,
 }
 
-impl<'a> Dhcp4Config<'a> {
-    pub(crate) fn new(dbus_accessor: DBusAccessor<'a>) -> Self {
+impl Dhcp4Config {
+    pub(crate) fn new(dbus_accessor: DBusAccessor) -> Self {
         Dhcp4Config { dbus_accessor }
     }
 

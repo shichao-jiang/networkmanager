@@ -63,8 +63,8 @@ pub trait Any {
 }
 
 macro_rules! impl_any {
-    ($name:ty, $lifetime:tt) => {
-        impl<$lifetime> Any for $name {
+    ($name:ty) => {
+        impl Any for $name {
             fn reapply(
                 &self,
                 connection: std::collections::HashMap<
@@ -125,7 +125,7 @@ macro_rules! impl_any {
             fn active_connection(&self) -> Result<Connection, Error> {
                 let path = proxy!(self).active_connection()?;
                 Ok(Connection::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     &path,
                 )))
@@ -133,7 +133,7 @@ macro_rules! impl_any {
             fn ip4_config(&self) -> Result<Ip4Config, Error> {
                 let path = proxy!(self).ip4_config()?;
                 Ok(Ip4Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     &path,
                 )))
@@ -141,7 +141,7 @@ macro_rules! impl_any {
             fn dhcp4_config(&self) -> Result<Dhcp4Config, Error> {
                 let path = proxy!(self).dhcp4_config()?;
                 Ok(Dhcp4Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     &path,
                 )))
@@ -149,7 +149,7 @@ macro_rules! impl_any {
             fn ip6_config(&self) -> Result<Ip6Config, Error> {
                 let path = proxy!(self).ip6_config()?;
                 Ok(Ip6Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     &path,
                 )))
@@ -157,7 +157,7 @@ macro_rules! impl_any {
             fn dhcp6_config(&self) -> Result<Dhcp6Config, Error> {
                 let path = proxy!(self).dhcp6_config()?;
                 Ok(Dhcp6Config::new(DBusAccessor::new(
-                    self.dbus_accessor.connection,
+                    self.dbus_accessor.connection.clone(),
                     &self.dbus_accessor.bus,
                     &path,
                 )))
@@ -233,8 +233,8 @@ macro_rules! impl_any {
     };
 }
 
-impl_any!(VethDevice<'a>, 'a);
-impl_any!(BridgeDevice<'a>, 'a);
-impl_any!(WiFiDevice<'a>, 'a);
-impl_any!(EthernetDevice<'a>, 'a);
-impl_any!(GenericDevice<'a>, 'a);
+impl_any!(VethDevice);
+impl_any!(BridgeDevice);
+impl_any!(WiFiDevice);
+impl_any!(EthernetDevice);
+impl_any!(GenericDevice);

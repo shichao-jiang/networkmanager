@@ -10,7 +10,7 @@ pub trait Wired {
     fn carrier(&self) -> Result<bool, Error>;
 }
 
-impl<'a> Wired for EthernetDevice<'a> {
+impl Wired for EthernetDevice {
     fn hw_address(&self) -> Result<String, Error> {
         Ok(proxy!(self).hw_address()?)
     }

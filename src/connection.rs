@@ -6,12 +6,13 @@ use crate::types::{ActivationStateFlags, ActiveConnectionState};
 use crate::Error;
 use num_traits::FromPrimitive;
 
-pub struct Connection<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct Connection {
+    dbus_accessor: DBusAccessor,
 }
 
-impl<'a> Connection<'a> {
-    pub(crate) fn new(dbus_accessor: DBusAccessor<'a>) -> Self {
+impl Connection {
+    pub(crate) fn new(dbus_accessor: DBusAccessor) -> Self {
         Connection { dbus_accessor }
     }
     pub fn connection(&self) -> Result<String, Error> {
@@ -34,7 +35,7 @@ impl<'a> Connection<'a> {
         let mut res = Vec::new();
         for dev_path in device_paths {
             res.push(Device::new(DBusAccessor::new(
-                self.dbus_accessor.connection,
+                self.dbus_accessor.connection.clone(),
                 &self.dbus_accessor.bus,
                 &dev_path,
             ))?);
@@ -61,7 +62,7 @@ impl<'a> Connection<'a> {
     pub fn ip4_config(&self) -> Result<Ip4Config, Error> {
         let path = proxy!(self).ip4_config()?;
         Ok(Ip4Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &path,
         )))
@@ -69,7 +70,7 @@ impl<'a> Connection<'a> {
     pub fn dhcp4_config(&self) -> Result<Dhcp4Config, Error> {
         let path = proxy!(self).dhcp4_config()?;
         Ok(Dhcp4Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &path,
         )))
@@ -80,7 +81,7 @@ impl<'a> Connection<'a> {
     pub fn ip6_config(&self) -> Result<Ip6Config, Error> {
         let path = proxy!(self).ip6_config()?;
         Ok(Ip6Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &path,
         )))
@@ -88,7 +89,7 @@ impl<'a> Connection<'a> {
     pub fn dhcp6_config(&self) -> Result<Dhcp6Config, Error> {
         let path = proxy!(self).dhcp6_config()?;
         Ok(Dhcp6Config::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &path,
         )))
@@ -99,7 +100,7 @@ impl<'a> Connection<'a> {
     pub fn master(&self) -> Result<Device, Error> {
         let dev_path = proxy!(self).master()?;
         Device::new(DBusAccessor::new(
-            self.dbus_accessor.connection,
+            self.dbus_accessor.connection.clone(),
             &self.dbus_accessor.bus,
             &dev_path,
         ))

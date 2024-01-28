@@ -19,12 +19,8 @@
 //! use networkmanager::devices::{Any, Device, Wired, Wireless};
 //! use networkmanager::{Error, NetworkManager};
 //!
-//! use dbus::blocking::Connection;
-//!
 //! fn main() -> Result<(), Error> {
-//!     let dbus_connection = Connection::new_system()?;
-//!
-//!     let nm = NetworkManager::new(&dbus_connection);
+//!     let nm = NetworkManager::new()?;
 //!
 //!     for dev in nm.get_devices()? {
 //!         match dev {

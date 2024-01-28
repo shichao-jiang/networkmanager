@@ -1,15 +1,10 @@
-# NetworkManager bindings for Rust
+# NetworkManager bindings for Rust (fork)
 
-[![Crates.io](https://img.shields.io/crates/v/networkmanager.svg)](https://crates.io/crates/networkmanager)
-[![docs.rs](https://docs.rs/networkmanager/badge.svg)](https://docs.rs/networkmanager)
-[![license](https://img.shields.io/crates/l/networkmanager.svg)](https://crates.io/crates/networkmanager)
-[![CI](https://github.com/truehumandesign/networkmanager-rs/workflows/Continuous%20Integration/badge.svg)](https://github.com/truehumandesign/networkmanager-rs/actions)
+> Fork by @passcod to rewrite a few APIs to be more ergonomic.
 
 [NetworkManager](https://wiki.gnome.org/Projects/NetworkManager) bindings for Rust using the [D-Bus message bus system](https://www.freedesktop.org/wiki/Software/dbus/)
 
 ## Status
-
-**NOTE**: At the moment i dont have any time to take care of this project. Contributors welcome!!
 
 This project is still under development. Currently implemented parts can be found in the docs.
 

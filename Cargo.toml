@@ -4,6 +4,7 @@ version = "0.4.1"
 authors = [
     "Tobias Tschinkowitz <tobias.tschinkowitz@icloud.com>",
     "Walter Bonetti",
+    "Félix Saparelli <felix@passcod.name>",
 ]
 description = "Bindings for the Linux NetworkManager"
 repository = "https://github.com/truehumandesign/networkmanager-rs"
@@ -11,10 +12,11 @@ documentation = "https://docs.rs/networkmanager"
 readme = "README.md"
 categories = ["api-bindings", "network-programming", "os::unix-apis"]
 keywords = ["networkmanager", "dbus", "wifi", "networking"]
-edition = "2018"
+edition = "2021"
 license = "MIT OR Apache-2.0"
 
 [dependencies]
 dbus = "0.9"
 num-traits = "0.2"
 num-derive = "0.4"
+thiserror = "1.0.56"

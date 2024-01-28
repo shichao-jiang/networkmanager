@@ -2,12 +2,13 @@ use crate::dbus_api::DBusAccessor;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManagerDHCP6Config;
 
-pub struct Dhcp6Config<'a> {
-    dbus_accessor: DBusAccessor<'a>,
+#[derive(Clone, Debug)]
+pub struct Dhcp6Config {
+    dbus_accessor: DBusAccessor,
 }
 
-impl<'a> Dhcp6Config<'a> {
-    pub(crate) fn new(dbus_accessor: DBusAccessor<'a>) -> Self {
+impl Dhcp6Config {
+    pub(crate) fn new(dbus_accessor: DBusAccessor) -> Self {
         Dhcp6Config { dbus_accessor }
     }
     pub fn options(

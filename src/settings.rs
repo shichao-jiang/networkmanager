@@ -3,7 +3,7 @@ use crate::dbus_api::DBusAccessor;
 use crate::errors::Error;
 use crate::gen::OrgFreedesktopNetworkManagerSettings;
 
-const SETTINGS_BUS: &str = "org.freedesktop.NetworkManager.Settings";
+const SETTINGS_BUS: &str = "org.freedesktop.NetworkManager";
 const SETTINGS_PATH: &str = "/org/freedesktop/NetworkManager/Settings";
 
 pub struct Settings {

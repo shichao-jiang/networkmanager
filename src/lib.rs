@@ -14,16 +14,15 @@
 //! # use passcod_networkmanager as networkmanager;
 //! use networkmanager::{Error, NetworkManager};
 //!
-//! #[tokio::main]
-//! async fn main() -> Result<(), Error> {
-//!     let nm = NetworkManager::new().await?;
+//!  fn main() -> Result<(), Error> {
+//!     let nm = NetworkManager::new()?;
 //!
-//!     for dev in nm.get_devices().await? {
-//!         if let Some(wifi) = dev.to_wireless().await? {
-//!             println!("Bitrate: {:?}", wifi.bitrate().await?);
-//!             wifi.request_scan().await?;
-//!             for ap in wifi.get_all_access_points().await? {
-//!                 let raw = ap.ssid().await?;
+//!     for dev in nm.get_devices()? {
+//!         if let Some(wifi) = dev.to_wireless()? {
+//!             println!("Bitrate: {:?}", wifi.bitrate()?);
+//!             wifi.request_scan()?;
+//!             for ap in wifi.get_all_access_points()? {
+//!                 let raw = ap.ssid()?;
 //!                 println!("SSID: {} {raw:02x?}", String::from_utf8_lossy(&raw));
 //!             }
 //!         }
@@ -62,23 +61,29 @@ macro_rules! zproxy_unpathed {
     ($facade:ty, $proxy:ty) => {
         impl $facade {
             #[cfg(not(feature = "raw"))]
-            pub(crate) async fn raw(&self) -> Result<$proxy, crate::Error> {
-                use zbus::ProxyDefault;
+            pub(crate) fn raw(&self) -> Result<$proxy, crate::Error> {
+                use zbus::proxy::Defaults;
+
+                let destination = crate::raw::networkmanager::NetworkManagerProxy::DESTINATION
+                    .as_ref()
+                    .unwrap();
                 <$proxy>::builder(&self.zbus)
-                    .destination(crate::raw::networkmanager::NetworkManagerProxy::DESTINATION)?
+                    .destination(destination)?
                     .build()
-                    .await
                     .map_err(crate::Error::ZBus)
             }
 
             /// Get the raw D-Bus proxy.
             #[cfg(feature = "raw")]
-            pub async fn raw(&self) -> Result<$proxy, crate::Error> {
-                use zbus::ProxyDefault;
+            pub fn raw(&self) -> Result<$proxy, crate::Error> {
+                use zbus::proxy::Defaults;
+
+                let destination = crate::raw::networkmanager::NetworkManagerProxy::DESTINATION
+                    .as_ref()
+                    .unwrap();
                 <$proxy>::builder(&self.zbus)
-                    .destination(crate::raw::networkmanager::NetworkManagerProxy::DESTINATION)?
+                    .destination(destination)?
                     .build()
-                    .await
                     .map_err(crate::Error::ZBus)
             }
         }
@@ -88,25 +93,27 @@ macro_rules! zproxy_pathed {
     ($facade:ty, $proxy:ty) => {
         impl $facade {
             #[cfg(not(feature = "raw"))]
-            pub(crate) async fn raw(&self) -> Result<$proxy, crate::Error> {
-                use zbus::ProxyDefault;
+            pub(crate) fn raw(&self) -> Result<$proxy, crate::Error> {
+                use zbus::proxy::Defaults;
+
+                let destination = crate::raw::networkmanager::NetworkManagerProxy::DESTINATION
+                    .as_ref()
+                    .unwrap();
                 <$proxy>::builder(&self.zbus)
                     .path(&self.path)?
-                    .destination(crate::raw::networkmanager::NetworkManagerProxy::DESTINATION)?
+                    .destination(destination)?
                     .build()
-                    .await
                     .map_err(crate::Error::ZBus)
             }
 
             /// Get the raw D-Bus proxy.
             #[cfg(feature = "raw")]
-            pub async fn raw(&self) -> Result<$proxy, crate::Error> {
-                use zbus::ProxyDefault;
+            pub fn raw(&self) -> Result<$proxy, crate::Error> {
+                use zbus::proxy::Defaults;
                 <$proxy>::builder(&self.zbus)
                     .path(&self.path)?
-                    .destination(crate::raw::networkmanager::NetworkManagerProxy::DESTINATION)?
+                    .destination(destination)?
                     .build()
-                    .await
                     .map_err(crate::Error::ZBus)
             }
         }
@@ -116,25 +123,31 @@ macro_rules! zproxy_sub {
     ($parent:ty, $facade:ty, $proxy:ty) => {
         impl $facade {
             #[cfg(not(feature = "raw"))]
-            pub(crate) async fn raw(&self) -> Result<$proxy, crate::Error> {
-                use zbus::ProxyDefault;
+            pub(crate) fn raw(&self) -> Result<$proxy, crate::Error> {
+                use zbus::proxy::Defaults;
+
+                let destination = crate::raw::networkmanager::NetworkManagerProxy::DESTINATION
+                    .as_ref()
+                    .unwrap();
                 <$proxy>::builder(&self.parent.zbus)
                     .path(&self.parent.path)?
-                    .destination(crate::raw::networkmanager::NetworkManagerProxy::DESTINATION)?
+                    .destination(destination)?
                     .build()
-                    .await
                     .map_err(crate::Error::ZBus)
             }
 
             /// Get the raw D-Bus proxy.
             #[cfg(feature = "raw")]
-            pub async fn raw(&self) -> Result<$proxy, crate::Error> {
-                use zbus::ProxyDefault;
+            pub fn raw(&self) -> Result<$proxy, crate::Error> {
+                use zbus::proxy::Defaults;
+
+                let destination = crate::raw::networkmanager::NetworkManagerProxy::DESTINATION
+                    .as_ref()
+                    .unwrap();
                 <$proxy>::builder(&self.parent.zbus)
                     .path(&self.parent.path)?
-                    .destination(crate::raw::networkmanager::NetworkManagerProxy::DESTINATION)?
+                    .destination(destination)?
                     .build()
-                    .await
                     .map_err(crate::Error::ZBus)
             }
 

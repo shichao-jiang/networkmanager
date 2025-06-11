@@ -10,18 +10,18 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Infiniband",
     assume_defaults = true
 )]
 pub trait DeviceInfiniband {
     /// Carrier property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn carrier(&self) -> zbus::Result<bool>;
 
     /// HwAddress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hw_address(&self) -> zbus::Result<String>;
 }

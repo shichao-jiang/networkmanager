@@ -10,22 +10,22 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Checkpoint",
     assume_defaults = true
 )]
 pub trait Checkpoint {
     /// Created property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn created(&self) -> zbus::Result<i64>;
 
     /// Devices property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn devices(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// RollbackTimeout property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn rollback_timeout(&self) -> zbus::Result<u32>;
 }

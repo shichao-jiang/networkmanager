@@ -10,15 +10,15 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.DHCP6Config",
     assume_defaults = true
 )]
 pub trait DHCP6Config {
     /// Options property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn options(
         &self,
     ) -> zbus::Result<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>;

@@ -10,14 +10,14 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Vrf",
     assume_defaults = true
 )]
 pub trait DeviceVrf {
     /// Table property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn table(&self) -> zbus::Result<u32>;
 }

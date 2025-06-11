@@ -1,7 +1,7 @@
 use num_traits::FromPrimitive;
-use zbus::{zvariant::OwnedObjectPath, Connection};
+use zbus::{blocking::Connection, zvariant::OwnedObjectPath};
 
-use crate::{raw::device::DeviceProxy, types::DeviceType, Error};
+use crate::{raw::device::DeviceProxyBlocking, types::DeviceType, Error};
 
 #[doc(inline)]
 pub use _methods::AppliedConnection;
@@ -20,12 +20,12 @@ pub struct Device {
     pub(crate) path: OwnedObjectPath,
 }
 
-crate::zproxy_pathed!(Device, DeviceProxy<'_>);
+crate::zproxy_pathed!(Device, DeviceProxyBlocking<'_>);
 
 impl Device {
     /// The general type of the network device; ie Ethernet, Wi-Fi, etc.
-    pub async fn device_type(&self) -> Result<DeviceType, Error> {
-        let dev_type = self.raw().await?.device_type().await?;
+    pub fn device_type(&self) -> Result<DeviceType, Error> {
+        let dev_type = self.raw()?.device_type()?;
         FromPrimitive::from_u32(dev_type).ok_or(Error::UnsupportedType)
     }
 }
@@ -34,8 +34,8 @@ macro_rules! cast {
     ($name:ident, $variant:ident, $cast:ty) => {
         impl Device {
             #[doc = concat!("Cast this device to a [`", stringify!($cast), "`].")]
-            pub async fn $name(&self) -> Result<Option<$cast>, Error> {
-                if let DeviceType::$variant = self.device_type().await? {
+            pub fn $name(&self) -> Result<Option<$cast>, Error> {
+                if let DeviceType::$variant = self.device_type()? {
                     Ok(Some(<$cast>::new(self.clone())))
                 } else {
                     Ok(None)

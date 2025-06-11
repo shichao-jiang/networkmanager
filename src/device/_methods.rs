@@ -39,16 +39,14 @@ impl Device {
     ///
     /// Reapply can make the _applied connection_ different from the _connection_, just like
     /// updating the _connection_ can make them different.
-    pub async fn reapply(
+    pub fn reapply(
         &self,
         connection: HashMap<&str, HashMap<&str, Value<'_>>>,
         version_id: u64,
         flags: u32,
     ) -> Result<(), Error> {
-        self.raw()
-            .await?
+        self.raw()?
             .reapply(connection, version_id, flags)
-            .await
             .map_err(Error::ZBus)
     }
 
@@ -61,21 +59,21 @@ impl Device {
     /// of the referenced _connection_. However, it can differ if the _connection_ was subsequently
     /// modified or the _applied connection_ was modified by [`Device::reapply()`]. The
     /// _applied connection_ is set when activating a device or when calling reapply.
-    pub async fn get_applied_connection(&self) -> Result<AppliedConnection, Error> {
-        let (settings, version) = self.raw().await?.get_applied_connection(0).await?;
+    pub fn get_applied_connection(&self) -> Result<AppliedConnection, Error> {
+        let (settings, version) = self.raw()?.get_applied_connection(0)?;
         Ok(AppliedConnection { settings, version })
     }
 
     /// Disconnects a device and prevents the device from automatically activating further connections without user intervention.
-    pub async fn disconnect(&self) -> Result<(), Error> {
-        self.raw().await?.disconnect().await.map_err(Error::ZBus)
+    pub fn disconnect(&self) -> Result<(), Error> {
+        self.raw()?.disconnect().map_err(Error::ZBus)
     }
 
     /// Deletes a software device from NetworkManager and removes the interface from the system.
     ///
     /// The method returns an error when called for a hardware device.
-    pub async fn delete(&self) -> Result<(), Error> {
-        self.raw().await?.delete().await.map_err(Error::ZBus)
+    pub fn delete(&self) -> Result<(), Error> {
+        self.raw()?.delete().map_err(Error::ZBus)
     }
 
     /// OS-specific transient device hardware identifier.
@@ -91,18 +89,18 @@ impl Device {
     /// you're looking for a way to uniquely track each device in your application, use the object
     /// path. If you're looking for a way to track a specific piece of hardware across reboot or
     /// hotplug, use a MAC address or USB serial number.
-    pub async fn udi(&self) -> Result<String, Error> {
-        self.raw().await?.udi().await.map_err(Error::ZBus)
+    pub fn udi(&self) -> Result<String, Error> {
+        self.raw()?.udi().map_err(Error::ZBus)
     }
 
     /// The path of the device as exposed by the udev property `ID_PATH`.
-    pub async fn path(&self) -> Result<String, Error> {
-        self.raw().await?.path().await.map_err(Error::ZBus)
+    pub fn path(&self) -> Result<String, Error> {
+        self.raw()?.path().map_err(Error::ZBus)
     }
 
     /// The name of the device's control (and often data) interface.
-    pub async fn interface(&self) -> Result<String, Error> {
-        self.raw().await?.interface().await.map_err(Error::ZBus)
+    pub fn interface(&self) -> Result<String, Error> {
+        self.raw()?.interface().map_err(Error::ZBus)
     }
 
     /// The name of the device's data interface when available.
@@ -110,55 +108,47 @@ impl Device {
     /// This property may not refer to the actual data interface until the device has successfully
     /// established a data connection, indicated by [`Device::state()`] becoming
     /// [`DeviceState::Activated`].
-    pub async fn ip_interface(&self) -> Result<String, Error> {
-        self.raw().await?.ip_interface().await.map_err(Error::ZBus)
+    pub fn ip_interface(&self) -> Result<String, Error> {
+        self.raw()?.ip_interface().map_err(Error::ZBus)
     }
 
     /// The driver handling the device.
-    pub async fn driver(&self) -> Result<String, Error> {
-        self.raw().await?.driver().await.map_err(Error::ZBus)
+    pub fn driver(&self) -> Result<String, Error> {
+        self.raw()?.driver().map_err(Error::ZBus)
     }
 
     /// The version of the driver handling the device.
-    pub async fn driver_version(&self) -> Result<String, Error> {
-        self.raw()
-            .await?
-            .driver_version()
-            .await
-            .map_err(Error::ZBus)
+    pub fn driver_version(&self) -> Result<String, Error> {
+        self.raw()?.driver_version().map_err(Error::ZBus)
     }
 
     /// The firmware version for the device.
-    pub async fn firmware_version(&self) -> Result<String, Error> {
-        self.raw()
-            .await?
-            .firmware_version()
-            .await
-            .map_err(Error::ZBus)
+    pub fn firmware_version(&self) -> Result<String, Error> {
+        self.raw()?.firmware_version().map_err(Error::ZBus)
     }
 
     /// Flags describing the capabilities of the device.
-    pub async fn capabilities(&self) -> Result<CapabilityFlags, Error> {
-        let cap = self.raw().await?.capabilities().await?;
+    pub fn capabilities(&self) -> Result<CapabilityFlags, Error> {
+        let cap = self.raw()?.capabilities()?;
         Ok(CapabilityFlags::from_bits_retain(cap))
     }
 
     /// The current state of the device.
-    pub async fn state(&self) -> Result<DeviceState, Error> {
-        let state = self.raw().await?.state_property().await?;
+    pub fn state(&self) -> Result<DeviceState, Error> {
+        let state = self.raw()?.state_property()?;
         FromPrimitive::from_u32(state).ok_or(Error::UnsupportedType)
     }
 
     /// The current state of the device and the reason for that state.
-    pub async fn state_with_reason(&self) -> Result<(DeviceState, DeviceStateReason), Error> {
-        let (state, reason) = self.raw().await?.state_reason().await?;
+    pub fn state_with_reason(&self) -> Result<(DeviceState, DeviceStateReason), Error> {
+        let (state, reason) = self.raw()?.state_reason()?;
         Ok((
             FromPrimitive::from_u32(state).ok_or(Error::UnsupportedType)?,
             FromPrimitive::from_u32(reason).ok_or(Error::UnsupportedType)?,
         ))
     }
 
-    pub async fn active_connection(&self) -> Result<Connection, Error> {
+    pub fn active_connection(&self) -> Result<Connection, Error> {
         todo!()
     }
 
@@ -179,8 +169,8 @@ impl Device {
     // }
 
     /// Whether or not this device is managed by NetworkManager.
-    pub async fn is_managed(&self) -> Result<bool, Error> {
-        self.raw().await?.managed().await.map_err(Error::ZBus)
+    pub fn is_managed(&self) -> Result<bool, Error> {
+        self.raw()?.managed().map_err(Error::ZBus)
     }
 
     /// Set whether or not this device is managed by NetworkManager.
@@ -189,17 +179,13 @@ impl Device {
     /// `keyfile.unmanaged-devices` setting in `NetworkManager.conf`.
     ///
     /// Changes to this value are not persistent and lost after NetworkManager restarts.
-    pub async fn set_managed(&self, managed: bool) -> Result<(), Error> {
-        self.raw()
-            .await?
-            .set_managed(managed)
-            .await
-            .map_err(Error::ZBus)
+    pub fn set_managed(&self, managed: bool) -> Result<(), Error> {
+        self.raw()?.set_managed(managed).map_err(Error::ZBus)
     }
 
     /// Indicates the device is allowed to autoconnect.
-    pub async fn can_autoconnect(&self) -> Result<bool, Error> {
-        self.raw().await?.autoconnect().await.map_err(Error::ZBus)
+    pub fn can_autoconnect(&self) -> Result<bool, Error> {
+        self.raw()?.autoconnect().map_err(Error::ZBus)
     }
 
     /// Set whether or not this device is allowed to autoconnect.
@@ -210,30 +196,20 @@ impl Device {
     ///
     /// This property cannot be set to true for default-unmanaged devices, since they never
     /// autoconnect.
-    pub async fn set_autoconnect(&self, autoconnect: bool) -> Result<(), Error> {
-        self.raw()
-            .await?
+    pub fn set_autoconnect(&self, autoconnect: bool) -> Result<(), Error> {
+        self.raw()?
             .set_autoconnect(autoconnect)
-            .await
             .map_err(Error::ZBus)
     }
 
     /// Indicates the device is likely missing firmware necessary for its operation.
-    pub async fn is_firmware_missing(&self) -> Result<bool, Error> {
-        self.raw()
-            .await?
-            .firmware_missing()
-            .await
-            .map_err(Error::ZBus)
+    pub fn is_firmware_missing(&self) -> Result<bool, Error> {
+        self.raw()?.firmware_missing().map_err(Error::ZBus)
     }
 
     /// Indicates the NetworkManager plugin for the device is likely missing or misconfigured.
-    pub async fn is_plugin_missing(&self) -> Result<bool, Error> {
-        self.raw()
-            .await?
-            .nm_plugin_missing()
-            .await
-            .map_err(Error::ZBus)
+    pub fn is_plugin_missing(&self) -> Result<bool, Error> {
+        self.raw()?.nm_plugin_missing().map_err(Error::ZBus)
     }
 
     // fn available_connections(&self) -> Result<Vec<Connection>, Error> {
@@ -245,15 +221,15 @@ impl Device {
     //     Ok(connections)
     // }
 
-    // pub async fn ports(&self) -> Result<Vec<Port>, Error> {
+    // pub  fn ports(&self) -> Result<Vec<Port>, Error> {
     // }
 
     /// An opaque indicator of the physical network port associated with the device.
     ///
     /// This can be used to recognize when two seemingly-separate hardware devices are actually just
     /// different virtual interfaces to the same physical port.
-    pub async fn physical_port_id(&self) -> Result<Option<String>, Error> {
-        let id = self.raw().await?.physical_port_id().await?;
+    pub fn physical_port_id(&self) -> Result<Option<String>, Error> {
+        let id = self.raw()?.physical_port_id()?;
         if id.is_empty() {
             Ok(None)
         } else {
@@ -262,8 +238,8 @@ impl Device {
     }
 
     /// The MTU (Maximum Transmission Unit) of the device.
-    pub async fn mtu(&self) -> Result<u32, Error> {
-        self.raw().await?.mtu().await.map_err(Error::ZBus)
+    pub fn mtu(&self) -> Result<u32, Error> {
+        self.raw()?.mtu().map_err(Error::ZBus)
     }
 
     /// The device's metered state.
@@ -276,49 +252,45 @@ impl Device {
     /// NetworkManager tries to guess the metered state, for example based on the device type or on
     /// DHCP options (like Android devices exposing a `ANDROID_METERED` DHCP vendor option). This
     /// then leads to either [`MeteredStatus::GuessNo`] or [`MeteredStatus::GuessYes`].
-    pub async fn is_metered(&self) -> Result<MeteredStatus, Error> {
-        let value = self.raw().await?.device_type().await?;
+    pub fn is_metered(&self) -> Result<MeteredStatus, Error> {
+        let value = self.raw()?.device_type()?;
         FromPrimitive::from_u32(value).ok_or(Error::UnsupportedType)
     }
 
     /// Array of LLDP neighbors.
-    pub async fn lldp_neighbors(&self) -> Result<Vec<HashMap<String, OwnedValue>>, Error> {
-        self.raw()
-            .await?
-            .lldp_neighbors()
-            .await
-            .map_err(Error::ZBus)
+    pub fn lldp_neighbors(&self) -> Result<Vec<HashMap<String, OwnedValue>>, Error> {
+        self.raw()?.lldp_neighbors().map_err(Error::ZBus)
     }
 
     /// Whether the device is real or a placeholder.
     ///
     /// Placeholder devices do not yet exist but could be automatically created by NetworkManager if
     /// one of their AvailableConnections was activated.
-    pub async fn is_real(&self) -> Result<bool, Error> {
-        self.raw().await?.real().await.map_err(Error::ZBus)
+    pub fn is_real(&self) -> Result<bool, Error> {
+        self.raw()?.real().map_err(Error::ZBus)
     }
 
     /// The result of the last IPv4 connectivity check.
-    pub async fn ipv4_connectivity(&self) -> Result<ConnectivityState, Error> {
-        let value = self.raw().await?.ip4_connectivity().await?;
+    pub fn ipv4_connectivity(&self) -> Result<ConnectivityState, Error> {
+        let value = self.raw()?.ip4_connectivity()?;
         FromPrimitive::from_u32(value).ok_or(Error::UnsupportedType)
     }
 
     /// The result of the last IPv6 connectivity check.
-    pub async fn ipv6_connectivity(&self) -> Result<ConnectivityState, Error> {
-        let value = self.raw().await?.ip6_connectivity().await?;
+    pub fn ipv6_connectivity(&self) -> Result<ConnectivityState, Error> {
+        let value = self.raw()?.ip6_connectivity()?;
         FromPrimitive::from_u32(value).ok_or(Error::UnsupportedType)
     }
 
     /// The flags of the network interface.
-    pub async fn interface_flags(&self) -> Result<DeviceInterfaceFlags, Error> {
-        let value = self.raw().await?.interface_flags().await?;
+    pub fn interface_flags(&self) -> Result<DeviceInterfaceFlags, Error> {
+        let value = self.raw()?.interface_flags()?;
         Ok(DeviceInterfaceFlags::from_bits_retain(value))
     }
 
     /// The hardware address of the device.
-    pub async fn hardware_address(&self) -> Result<String, Error> {
-        self.raw().await?.hw_address().await.map_err(Error::ZBus)
+    pub fn hardware_address(&self) -> Result<String, Error> {
+        self.raw()?.hw_address().map_err(Error::ZBus)
     }
 }
 

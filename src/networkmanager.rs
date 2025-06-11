@@ -1,8 +1,8 @@
-use zbus::Connection;
+use zbus::blocking::Connection;
 
 use crate::device::Device;
 use crate::errors::Error;
-use crate::raw::networkmanager::NetworkManagerProxy;
+use crate::raw::networkmanager::NetworkManagerProxyBlocking;
 use crate::settings::Settings;
 use crate::types::ReloadFlags;
 
@@ -11,12 +11,12 @@ pub struct NetworkManager {
     zbus: Connection,
 }
 
-crate::zproxy_unpathed!(NetworkManager, NetworkManagerProxy<'_>);
+crate::zproxy_unpathed!(NetworkManager, NetworkManagerProxyBlocking<'_>);
 
 impl NetworkManager {
     /// Create a new NetworkManager instance.
-    pub async fn new() -> Result<Self, Error> {
-        let zbus = Connection::system().await?;
+    pub fn new() -> Result<Self, Error> {
+        let zbus = Connection::system()?;
         Ok(Self::new_with_zbus(zbus))
     }
 
@@ -26,41 +26,29 @@ impl NetworkManager {
     }
 
     /// Reload NetworkManager.
-    pub async fn reload(&self, flags: ReloadFlags) -> Result<(), Error> {
-        self.raw()
-            .await?
-            .reload(flags.bits())
-            .await
-            .map_err(Error::ZBus)
+    pub fn reload(&self, flags: ReloadFlags) -> Result<(), Error> {
+        self.raw()?.reload(flags.bits()).map_err(Error::ZBus)
     }
 
     /// Get the list of realized network devices.
     ///
     /// Returns the network devices known to the system. Does not include device placeholders (see
     /// [`get_all_devices()`](#method.get_all_devices)).
-    pub async fn get_devices(&self) -> Result<impl Iterator<Item = Device> + '_, Error> {
-        Ok(self
-            .raw()
-            .await?
-            .get_devices()
-            .await?
-            .into_iter()
-            .map(|path| Device {
-                zbus: self.zbus.clone(),
-                path,
-            }))
+    pub fn get_devices(&self) -> Result<impl Iterator<Item = Device> + '_, Error> {
+        Ok(self.raw()?.get_devices()?.into_iter().map(|path| Device {
+            zbus: self.zbus.clone(),
+            path,
+        }))
     }
 
     /// Get the list of all network devices.
     ///
     /// Includes device placeholders (eg, devices that do not yet exist but which could be
     /// automatically created by NetworkManager if one of their AvailableConnections was activated).
-    pub async fn get_all_devices(&self) -> Result<impl Iterator<Item = Device> + '_, Error> {
+    pub fn get_all_devices(&self) -> Result<impl Iterator<Item = Device> + '_, Error> {
         Ok(self
-            .raw()
-            .await?
-            .get_all_devices()
-            .await?
+            .raw()?
+            .get_all_devices()?
             .into_iter()
             .map(|path| Device {
                 zbus: self.zbus.clone(),
@@ -72,10 +60,10 @@ impl NetworkManager {
     ///
     /// Note that some devices (usually modems) only have an IP interface name when they are
     /// connected.
-    pub async fn get_device_by_ip_interface_name(&self, iface: &str) -> Result<Device, Error> {
+    pub fn get_device_by_ip_interface_name(&self, iface: &str) -> Result<Device, Error> {
         Ok(Device {
             zbus: self.zbus.clone(),
-            path: self.raw().await?.get_device_by_ip_iface(iface).await?,
+            path: self.raw()?.get_device_by_ip_iface(iface)?,
         })
     }
 
@@ -94,49 +82,49 @@ impl NetworkManager {
     // TODO: CheckpointRollback()
     // TODO: CheckpointAdjustRollbackTimeout()
 
-    pub async fn enable(&self, enabled: bool) -> Result<(), Error> {
-        self.raw().await?.enable(enabled).await?;
+    pub fn enable(&self, enabled: bool) -> Result<(), Error> {
+        self.raw()?.enable(enabled)?;
         Ok(())
     }
 
-    pub async fn is_networking_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.networking_enabled().await?)
+    pub fn is_networking_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.networking_enabled()?)
     }
 
-    pub async fn is_wireless_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.wireless_enabled().await?)
+    pub fn is_wireless_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.wireless_enabled()?)
     }
 
-    pub async fn is_wireless_hardware_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.wireless_hardware_enabled().await?)
+    pub fn is_wireless_hardware_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.wireless_hardware_enabled()?)
     }
 
-    pub async fn is_wimax_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.wimax_enabled().await?)
+    pub fn is_wimax_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.wimax_enabled()?)
     }
 
-    pub async fn is_wimax_hardware_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.wimax_hardware_enabled().await?)
+    pub fn is_wimax_hardware_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.wimax_hardware_enabled()?)
     }
 
-    pub async fn is_wwan_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.wwan_enabled().await?)
+    pub fn is_wwan_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.wwan_enabled()?)
     }
 
-    pub async fn is_wwan_hardware_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.wwan_hardware_enabled().await?)
+    pub fn is_wwan_hardware_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.wwan_hardware_enabled()?)
     }
 
-    pub async fn is_connectivity_check_enabled(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.connectivity_check_enabled().await?)
+    pub fn is_connectivity_check_enabled(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.connectivity_check_enabled()?)
     }
 
     /// Indicates whether NetworkManager is still starting up.
     ///
     /// This becomes `false` when NetworkManager has finished attempting to activate every
     /// connection that it might be able to activate at startup.
-    pub async fn is_starting_up(&self) -> Result<bool, Error> {
-        Ok(self.raw().await?.startup().await?)
+    pub fn is_starting_up(&self) -> Result<bool, Error> {
+        Ok(self.raw()?.startup()?)
     }
 
     /// Settings service object

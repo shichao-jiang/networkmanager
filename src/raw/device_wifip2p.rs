@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.WifiP2P",
     assume_defaults = true
 )]
@@ -27,18 +27,18 @@ pub trait DeviceWifiP2P {
     fn stop_find(&self) -> zbus::Result<()>;
 
     /// PeerAdded signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn peer_added(&self, peer: zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 
     /// PeerRemoved signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn peer_removed(&self, peer: zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 
     /// HwAddress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hw_address(&self) -> zbus::Result<String>;
 
     /// Peers property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn peers(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 }

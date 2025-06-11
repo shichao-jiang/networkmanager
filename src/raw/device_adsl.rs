@@ -10,14 +10,14 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Adsl",
     assume_defaults = true
 )]
 pub trait DeviceAdsl {
     /// Carrier property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn carrier(&self) -> zbus::Result<bool>;
 }

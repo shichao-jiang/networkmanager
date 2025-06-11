@@ -1,16 +1,15 @@
 // use passcod_networkmanager::devices::{Any, Device, Wired, Wireless};
 use passcod_networkmanager::{Error, NetworkManager};
 
-#[tokio::main]
-async fn main() -> Result<(), Error> {
-    let nm = NetworkManager::new().await?;
+fn main() -> Result<(), Error> {
+    let nm = NetworkManager::new()?;
 
-    for dev in nm.get_devices().await? {
-        if let Some(wifi) = dev.to_wireless().await? {
-            println!("Bitrate: {:?}", wifi.bitrate().await?);
-            wifi.request_scan().await?;
-            for ap in wifi.get_all_access_points().await? {
-                let raw = ap.ssid().await?;
+    for dev in nm.get_devices()? {
+        if let Some(wifi) = dev.to_wireless()? {
+            println!("Bitrate: {:?}", wifi.bitrate()?);
+            wifi.request_scan()?;
+            for ap in wifi.get_all_access_points()? {
+                let raw = ap.ssid()?;
                 println!("SSID: {} {raw:02x?}", String::from_utf8_lossy(&raw));
             }
             // } else if let Some(eth) = dev.to_ethernet().await? {

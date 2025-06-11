@@ -10,22 +10,22 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Bond",
     assume_defaults = true
 )]
 pub trait DeviceBond {
     /// Carrier property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn carrier(&self) -> zbus::Result<bool>;
 
     /// HwAddress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hw_address(&self) -> zbus::Result<String>;
 
     /// Slaves property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn slaves(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 }

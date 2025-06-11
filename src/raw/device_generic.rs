@@ -10,18 +10,18 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Generic",
     assume_defaults = true
 )]
 pub trait DeviceGeneric {
     /// HwAddress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hw_address(&self) -> zbus::Result<String>;
 
     /// TypeDescription property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn type_description(&self) -> zbus::Result<String>;
 }

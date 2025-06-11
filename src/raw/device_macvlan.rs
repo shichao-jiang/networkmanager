@@ -10,26 +10,26 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Macvlan",
     assume_defaults = true
 )]
 pub trait DeviceMacvlan {
     /// Mode property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn mode(&self) -> zbus::Result<String>;
 
     /// NoPromisc property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn no_promisc(&self) -> zbus::Result<bool>;
 
     /// Parent property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn parent(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Tap property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn tap(&self) -> zbus::Result<bool>;
 }

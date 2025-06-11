@@ -10,22 +10,22 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.VPN.Connection",
     assume_defaults = true
 )]
 pub trait VPNConnection {
     /// VpnStateChanged signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn vpn_state_changed(&self, state: u32, reason: u32) -> zbus::Result<()>;
 
     /// Banner property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn banner(&self) -> zbus::Result<String>;
 
     /// VpnState property
-    #[dbus_proxy(property, name = "VpnState")]
+    #[zbus(property, name = "VpnState")]
     fn vpn_state_property(&self) -> zbus::Result<u32>;
 }

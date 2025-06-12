@@ -1,12 +1,10 @@
 use std::collections::HashMap;
 
 use num_traits::FromPrimitive;
-use zbus::{
-    zvariant::{OwnedValue, Value},
-    Connection,
-};
+use zbus::zvariant::{OwnedValue, Value};
 
 use crate::{
+    ip4config::Ip4Config,
     types::{
         CapabilityFlags, ConnectivityState, DeviceInterfaceFlags, DeviceState, DeviceStateReason,
         MeteredStatus,
@@ -148,13 +146,18 @@ impl Device {
         ))
     }
 
-    pub fn active_connection(&self) -> Result<Connection, Error> {
-        todo!()
-    }
-
-    // fn ipv4_config(&self) -> Result<Ip4Config, Error> {
+    // pub fn active_connection(&self) -> Result<Connection, Error> {
     //     todo!()
     // }
+
+    /// The IPv4 configuration of the device.
+    pub fn ip4_config(&self) -> Result<Ip4Config, Error> {
+        let path = self.raw()?.ip4_config()?;
+        Ok(Ip4Config {
+            zbus: self.zbus.clone(),
+            path,
+        })
+    }
 
     // fn dhcp4_config(&self) -> Result<Dhcp4Config, Error> {
     //     todo!()

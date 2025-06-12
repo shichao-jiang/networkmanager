@@ -40,6 +40,7 @@
 #![deny(rust_2018_idioms)]
 
 mod errors;
+mod ip4config;
 mod networkmanager;
 mod raw;
 mod settings;
@@ -51,6 +52,7 @@ pub mod device;
 pub mod types;
 
 pub use crate::errors::Error;
+pub use crate::ip4config::Ip4Config;
 pub use crate::networkmanager::NetworkManager;
 pub use crate::settings::Settings;
 

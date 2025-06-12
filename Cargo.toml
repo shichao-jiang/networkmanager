@@ -1,7 +1,8 @@
 [package]
-name = "passcod-networkmanager"
+name = "networkmanager"
 version = "0.8.0"
 authors = [
+    "Shichao Jiang <shichao_j@outlook.com>",
     "Tobias Tschinkowitz <tobias.tschinkowitz@icloud.com>",
     "Walter Bonetti",
     "Félix Saparelli <felix@passcod.name>",

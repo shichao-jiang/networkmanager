@@ -10,24 +10,24 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.DnsManager",
     assume_defaults = true
 )]
 pub trait DnsManager {
     /// Configuration property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn configuration(
         &self,
     ) -> zbus::Result<Vec<std::collections::HashMap<String, zbus::zvariant::OwnedValue>>>;
 
     /// Mode property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn mode(&self) -> zbus::Result<String>;
 
     /// RcManager property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn rc_manager(&self) -> zbus::Result<String>;
 }

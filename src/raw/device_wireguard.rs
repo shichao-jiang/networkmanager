@@ -10,22 +10,22 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.WireGuard",
     assume_defaults = true
 )]
 pub trait DeviceWireGuard {
     /// FwMark property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn fw_mark(&self) -> zbus::Result<u32>;
 
     /// ListenPort property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn listen_port(&self) -> zbus::Result<u16>;
 
     /// PublicKey property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn public_key(&self) -> zbus::Result<Vec<u8>>;
 }

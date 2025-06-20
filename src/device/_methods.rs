@@ -1,10 +1,7 @@
 use std::collections::HashMap;
 
 use num_traits::FromPrimitive;
-use zbus::{
-    zvariant::{OwnedValue, Value},
-    Connection,
-};
+use zbus::zvariant::{OwnedValue, Value};
 
 use crate::{
     types::{

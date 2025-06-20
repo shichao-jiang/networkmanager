@@ -10,30 +10,30 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Wired",
     assume_defaults = true
 )]
 pub trait DeviceWired {
     /// Carrier property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn carrier(&self) -> zbus::Result<bool>;
 
     /// HwAddress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hw_address(&self) -> zbus::Result<String>;
 
     /// PermHwAddress property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn perm_hw_address(&self) -> zbus::Result<String>;
 
     /// S390Subchannels property
-    #[dbus_proxy(property, name = "S390Subchannels")]
+    #[zbus(property, name = "S390Subchannels")]
     fn s390subchannels(&self) -> zbus::Result<Vec<String>>;
 
     /// Speed property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn speed(&self) -> zbus::Result<u32>;
 }

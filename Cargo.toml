@@ -2,6 +2,7 @@
 name = "passcod-networkmanager"
 version = "0.7.0-pre.1"
 authors = [
+    "Shichao Jiang <shichao_j@outlook.com>",
     "Tobias Tschinkowitz <tobias.tschinkowitz@icloud.com>",
     "Walter Bonetti",
     "Félix Saparelli <felix@passcod.name>",
@@ -19,7 +20,8 @@ license = "MIT OR Apache-2.0"
 num-traits = "0.2.17"
 num-derive = "0.4.1"
 thiserror = "1.0.56"
-zbus = "3.14.1"
+zbus = "5.7.1"
+zbus_macros = "5.7.1"
 bitflags = "2.4.2"
 
 [dev-dependencies]

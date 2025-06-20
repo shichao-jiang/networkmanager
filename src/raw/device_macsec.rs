@@ -10,62 +10,62 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Macsec",
     assume_defaults = true
 )]
 pub trait DeviceMacsec {
     /// CipherSuite property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn cipher_suite(&self) -> zbus::Result<u64>;
 
     /// EncodingSa property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn encoding_sa(&self) -> zbus::Result<u8>;
 
     /// Encrypt property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn encrypt(&self) -> zbus::Result<bool>;
 
     /// Es property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn es(&self) -> zbus::Result<bool>;
 
     /// IcvLength property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn icv_length(&self) -> zbus::Result<u8>;
 
     /// IncludeSci property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn include_sci(&self) -> zbus::Result<bool>;
 
     /// Parent property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn parent(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Protect property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn protect(&self) -> zbus::Result<bool>;
 
     /// ReplayProtect property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn replay_protect(&self) -> zbus::Result<bool>;
 
     /// Scb property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn scb(&self) -> zbus::Result<bool>;
 
     /// Sci property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn sci(&self) -> zbus::Result<u64>;
 
     /// Validation property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn validation(&self) -> zbus::Result<String>;
 
     /// Window property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn window(&self) -> zbus::Result<u32>;
 }

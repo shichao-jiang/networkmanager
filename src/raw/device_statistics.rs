@@ -10,23 +10,23 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Statistics",
     assume_defaults = true
 )]
 pub trait DeviceStatistics {
     /// RefreshRateMs property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn refresh_rate_ms(&self) -> zbus::Result<u32>;
     fn set_refresh_rate_ms(&self, value: u32) -> zbus::Result<()>;
 
     /// RxBytes property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn rx_bytes(&self) -> zbus::Result<u64>;
 
     /// TxBytes property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn tx_bytes(&self) -> zbus::Result<u64>;
 }

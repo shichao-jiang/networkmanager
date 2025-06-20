@@ -10,30 +10,30 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Device.Modem",
     assume_defaults = true
 )]
 pub trait DeviceModem {
     /// Apn property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn apn(&self) -> zbus::Result<String>;
 
     /// CurrentCapabilities property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn current_capabilities(&self) -> zbus::Result<u32>;
 
     /// DeviceId property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn device_id(&self) -> zbus::Result<String>;
 
     /// ModemCapabilities property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn modem_capabilities(&self) -> zbus::Result<u32>;
 
     /// OperatorCode property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn operator_code(&self) -> zbus::Result<String>;
 }

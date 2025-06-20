@@ -10,22 +10,22 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.WiMax.Nsp",
     assume_defaults = true
 )]
 pub trait WiMaxNsp {
     /// Name property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn name(&self) -> zbus::Result<String>;
 
     /// NetworkType property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn network_type(&self) -> zbus::Result<u32>;
 
     /// SignalQuality property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn signal_quality(&self) -> zbus::Result<u32>;
 }

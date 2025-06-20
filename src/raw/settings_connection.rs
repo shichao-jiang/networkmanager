@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Settings.Connection",
     assume_defaults = true
 )]
@@ -77,22 +77,22 @@ pub trait SettingsConnection {
     ) -> zbus::Result<()>;
 
     /// Removed signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn removed(&self) -> zbus::Result<()>;
 
     /// Updated signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn updated(&self) -> zbus::Result<()>;
 
     /// Filename property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn filename(&self) -> zbus::Result<String>;
 
     /// Flags property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn flags(&self) -> zbus::Result<u32>;
 
     /// Unsaved property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn unsaved(&self) -> zbus::Result<bool>;
 }

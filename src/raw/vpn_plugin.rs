@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.VPN.Plugin",
     assume_defaults = true
 )]
@@ -79,43 +79,43 @@ pub trait VPNPlugin {
     ) -> zbus::Result<()>;
 
     /// Config signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn config(
         &self,
         config: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<()>;
 
     /// Failure signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn failure(&self, reason: u32) -> zbus::Result<()>;
 
     /// Ip4Config signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn ip4_config(
         &self,
         ip4config: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<()>;
 
     /// Ip6Config signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn ip6_config(
         &self,
         ip6config: std::collections::HashMap<&str, zbus::zvariant::Value<'_>>,
     ) -> zbus::Result<()>;
 
     /// LoginBanner signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn login_banner(&self, banner: &str) -> zbus::Result<()>;
 
     /// SecretsRequired signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn secrets_required(&self, message: &str, secrets: Vec<&str>) -> zbus::Result<()>;
 
     /// StateChanged signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn state_changed(&self, state: u32) -> zbus::Result<()>;
 
     /// State property
-    #[dbus_proxy(property, name = "State")]
+    #[zbus(property, name = "State")]
     fn state_property(&self) -> zbus::Result<u32>;
 }

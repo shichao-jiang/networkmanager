@@ -8,4 +8,6 @@ pub enum Error {
     UnsupportedDevice,
     #[error("Unsupported type")]
     UnsupportedType,
+    #[error("Missing destination")]
+    MissingDestination,
 }

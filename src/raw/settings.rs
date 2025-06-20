@@ -10,9 +10,9 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Settings",
     assume_defaults = true
 )]
@@ -65,22 +65,22 @@ pub trait Settings {
     fn save_hostname(&self, hostname: &str) -> zbus::Result<()>;
 
     /// ConnectionRemoved signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn connection_removed(&self, connection: zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 
     /// NewConnection signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn new_connection(&self, connection: zbus::zvariant::ObjectPath<'_>) -> zbus::Result<()>;
 
     /// CanModify property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn can_modify(&self) -> zbus::Result<bool>;
 
     /// Connections property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn connections(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// Hostname property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn hostname(&self) -> zbus::Result<String>;
 }

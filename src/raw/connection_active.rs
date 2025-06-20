@@ -10,82 +10,82 @@
 //! section of the zbus documentation.
 //!
 
-use zbus::dbus_proxy;
+use zbus_macros::proxy;
 
-#[dbus_proxy(
+#[proxy(
     interface = "org.freedesktop.NetworkManager.Connection.Active",
     assume_defaults = true
 )]
 pub trait ConnectionActive {
     /// StateChanged signal
-    #[dbus_proxy(signal)]
+    #[zbus(signal)]
     fn state_changed(&self, state: u32, reason: u32) -> zbus::Result<()>;
 
     /// Connection property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn connection(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Controller property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn controller(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Default property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn default(&self) -> zbus::Result<bool>;
 
     /// Default6 property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn default6(&self) -> zbus::Result<bool>;
 
     /// Devices property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn devices(&self) -> zbus::Result<Vec<zbus::zvariant::OwnedObjectPath>>;
 
     /// Dhcp4Config property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn dhcp4_config(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Dhcp6Config property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn dhcp6_config(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Id property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn id(&self) -> zbus::Result<String>;
 
     /// Ip4Config property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn ip4_config(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Ip6Config property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn ip6_config(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// Master property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn master(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// SpecificObject property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn specific_object(&self) -> zbus::Result<zbus::zvariant::OwnedObjectPath>;
 
     /// State property
-    #[dbus_proxy(property, name = "State")]
+    #[zbus(property, name = "State")]
     fn state_property(&self) -> zbus::Result<u32>;
 
     /// StateFlags property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn state_flags(&self) -> zbus::Result<u32>;
 
     /// Type property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn type_(&self) -> zbus::Result<String>;
 
     /// Uuid property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn uuid(&self) -> zbus::Result<String>;
 
     /// Vpn property
-    #[dbus_proxy(property)]
+    #[zbus(property)]
     fn vpn(&self) -> zbus::Result<bool>;
 }

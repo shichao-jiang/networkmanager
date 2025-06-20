@@ -16,7 +16,7 @@ Add networkmanager to your `Cargo.toml` with:
 
 ```toml
 [dependencies]
-networkmanager = { package = "passcod-networkmanager", version = "=0.7.0-pre.1" }
+networkmanager = { package = "passcod-networkmanager", version = "=0.8.0" }
 tokio = { version = "1", features = ["full"] }
 ```
 
@@ -94,7 +94,7 @@ async fn main() -> Result<(), Error> {
     - [ ] Wireguard
     - [ ] Wpan
   - Configs
-    - [ ] IP4
+    - [x] IP4
     - [ ] IP6
     - [ ] DHCP4
     - [ ] DHCP6

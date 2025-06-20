@@ -14,6 +14,7 @@ use zbus_macros::proxy;
 
 #[proxy(
     interface = "org.freedesktop.NetworkManager.Settings.Connection",
+    default_path = "/org/freedesktop/NetworkManager/Settings/Connection",
     assume_defaults = true
 )]
 pub trait SettingsConnection {
